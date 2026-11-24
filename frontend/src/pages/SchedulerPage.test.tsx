@@ -3,6 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SchedulerPage } from './SchedulerPage.tsx'
+import { downloadScheduleExcel } from '../api/scheduleExcelExport.ts'
+
+vi.mock('../api/scheduleExcelExport.ts', () => ({
+  downloadScheduleExcel: vi.fn().mockResolvedValue(undefined),
+}))
 
 const user = {
   id: 1,
@@ -120,6 +125,8 @@ describe('SchedulerPage', () => {
 
     expect(await screen.findByText('Алгебра')).toBeInTheDocument()
     expect(screen.getByText('История')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Скачать Excel' }))
+    await waitFor(() => expect(downloadScheduleExcel).toHaveBeenCalledOnce())
     fireEvent.click(screen.getByRole('button', { name: 'Знаменатель' }))
 
     await waitFor(() => expect(screen.queryByText('История')).not.toBeInTheDocument())

@@ -7,6 +7,7 @@ import {
   PENDING_TTX_STORAGE_KEY,
   serializeSchedule,
 } from '../api/scheduleExport.ts'
+import { downloadScheduleExcel } from '../api/scheduleExcelExport.ts'
 import { DatasetEditor } from './DatasetEditor.tsx'
 import {
   fetchDatasetSummary,
@@ -131,6 +132,7 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
   const [week, setWeek] = useState<'odd' | 'even'>('odd')
   const [notice, setNotice] = useState('')
   const [exportError, setExportError] = useState('')
+  const [excelExporting, setExcelExporting] = useState(false)
 
   const dataset = useQuery({
     queryKey: ['dataset-summary'],
@@ -202,18 +204,23 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
     },
   })
 
-  function exportSchedule(selected: Schedule, visualize: boolean) {
+  async function exportSchedule(selected: Schedule, format: 'ttx' | 'excel' | 'visualize') {
     try {
-      const ttx = serializeSchedule(selected)
-      if (visualize) {
+      if (format === 'visualize') {
+        const ttx = serializeSchedule(selected)
         sessionStorage.setItem(PENDING_TTX_STORAGE_KEY, ttx)
         navigate('/vizualize-timetable?generated=1')
-      } else {
+      } else if (format === 'ttx') {
         downloadSchedule(selected)
+      } else {
+        setExcelExporting(true)
+        await downloadScheduleExcel(selected)
       }
       setExportError('')
     } catch (error) {
       setExportError(error instanceof Error ? error.message : String(error))
+    } finally {
+      setExcelExporting(false)
     }
   }
 
@@ -568,13 +575,20 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
                 <>
                   <button
                     className="quiet-button"
-                    onClick={() => exportSchedule(schedule.data!, false)}
+                    onClick={() => void exportSchedule(schedule.data!, 'ttx')}
                   >
                     Скачать JSON (TTX/1)
                   </button>
                   <button
                     className="quiet-button"
-                    onClick={() => exportSchedule(schedule.data!, true)}
+                    onClick={() => void exportSchedule(schedule.data!, 'excel')}
+                    disabled={excelExporting}
+                  >
+                    {excelExporting ? 'Готовим Excel…' : 'Скачать Excel'}
+                  </button>
+                  <button
+                    className="quiet-button"
+                    onClick={() => void exportSchedule(schedule.data!, 'visualize')}
                   >
                     Открыть в визуализаторе
                   </button>

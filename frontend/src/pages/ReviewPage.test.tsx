@@ -8,7 +8,7 @@ const lesson = (id: number, discipline: string, group: string) => ({
   id,
   refs: [{ sheet: '32', row: 3 + id, col: 'C' }],
   audience: [{ group, subgroup: null }],
-  day: 'mon',
+  day: 'mon' as const,
   period: 1,
   parity: 'odd' as const,
   lesson_type: 'lab',

@@ -34,6 +34,8 @@ tags:
   - name: time-grid
   - name: curriculum
   - name: review
+  - name: schedule-jobs
+  - name: schedules
 
 paths:
   /api/healthz:
@@ -833,6 +835,252 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
 
+  # --------------------------------------------------------- generation/jobs
+  /api/demo/dataset:
+    get:
+      tags: [system]
+      operationId: demoDatasetStatus
+      summary: Check whether synthetic dataset loading is enabled
+      responses:
+        "200":
+          description: The local synthetic-data loader availability.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [enabled]
+                properties:
+                  enabled: { type: boolean }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      tags: [system]
+      operationId: loadDemoDataset
+      summary: Replace timetable inputs with the synthetic demo dataset
+      description: |
+        Development-only admin operation. Replaces all reference data, curriculum and saved
+        schedules; users and audit history are retained. The request must explicitly confirm
+        replacement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [confirm_replace]
+              properties:
+                confirm_replace: { type: boolean, const: true }
+      responses:
+        "200":
+          description: The number of imported rows per table.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  periods: { type: integer }
+                  buildings: { type: integer }
+                  room_types: { type: integer }
+                  rooms: { type: integer }
+                  groups: { type: integer }
+                  subgroups: { type: integer }
+                  teachers: { type: integer }
+                  disciplines: { type: integer }
+                  teacher_availability: { type: integer }
+                  room_availability: { type: integer }
+                  curriculum_items: { type: integer }
+                  curriculum_audience: { type: integer }
+                  lessons: { type: integer }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409":
+          description: A generation job is running (`generation_running`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+  /api/dataset/template:
+    get:
+      tags: [system]
+      operationId: downloadDatasetTemplate
+      summary: Download a versioned editable synthetic dataset
+      responses:
+        "200":
+          description: A complete editable timetable-dataset JSON document.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PortableDataset" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /api/dataset:
+    post:
+      tags: [system]
+      operationId: importDataset
+      summary: Replace timetable inputs with a validated JSON dataset
+      description: |
+        Imports `timetable-dataset` version 2. Curriculum rows specify academic hours per
+        semester. The operation projects them onto weekly/alternating 90-minute periods and
+        validates references before
+        replacing data in one transaction. Existing schedules are removed; users and audit
+        history are retained. The administrator must explicitly confirm replacement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [confirm_replace, dataset]
+              properties:
+                confirm_replace: { type: boolean, const: true }
+                dataset: { $ref: "#/components/schemas/PortableDataset" }
+      responses:
+        "200":
+          description: Imported row counts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  periods: { type: integer }
+                  buildings: { type: integer }
+                  room_types: { type: integer }
+                  rooms: { type: integer }
+                  groups: { type: integer }
+                  subgroups: { type: integer }
+                  teachers: { type: integer }
+                  disciplines: { type: integer }
+                  curriculum_items: { type: integer }
+                  lessons: { type: integer }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409":
+          description: A generation job is running (`generation_running`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422":
+          description: Dataset references or values are invalid (`validation_failed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+  /api/schedule-jobs:
+    post:
+      tags: [schedule-jobs]
+      operationId: startScheduleGeneration
+      summary: Start an asynchronous timetable generation job
+      description: |
+        Runs the solver against the current reference data and curriculum. The best result is
+        saved as a working schedule, including when a running job is explicitly stopped.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name: { type: string, maxLength: 120 }
+                budget_seconds: { type: integer, minimum: 1, maximum: 300, default: 30 }
+                seed: { type: integer, minimum: 0 }
+      responses:
+        "202":
+          description: The job has been queued.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleJob" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "429":
+          description: The in-memory generation queue is full (`jobs_busy`).
+          headers:
+            Retry-After: { schema: { type: integer } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: The server could not allocate a job ID.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+  /api/schedule-jobs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, pattern: "^[0-9a-f]{32}$" }
+    get:
+      tags: [schedule-jobs]
+      operationId: getScheduleGenerationJob
+      summary: Read generation progress or result
+      responses:
+        "200":
+          description: Current job state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleJob" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/schedule-jobs/{id}/stop:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, pattern: "^[0-9a-f]{32}$" }
+    post:
+      tags: [schedule-jobs]
+      operationId: stopScheduleGenerationJob
+      summary: Stop a generation job and save its best result
+      description: The job status becomes cancelled after the current search step finishes.
+      responses:
+        "200":
+          description: The updated job state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleJob" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/schedules:
+    get:
+      tags: [schedules]
+      operationId: listSchedules
+      summary: List saved working schedules
+      responses:
+        "200":
+          description: Saved schedules ordered newest first.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ScheduleSummary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+  /api/schedules/{id}:
+    parameters: [{ $ref: "#/components/parameters/ID" }]
+    get:
+      tags: [schedules]
+      operationId: getSchedule
+      summary: Get a saved schedule with its lesson assignments
+      responses:
+        "200":
+          description: Schedule with timetable grid and quality summary.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Schedule" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+
 components:
   securitySchemes:
     cookieAuth:
@@ -867,6 +1115,142 @@ components:
       type: string
       pattern: "^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$"
       examples: ["08:30"]
+    PortableDataset:
+      type: object
+      additionalProperties: false
+      required: [format, version, semester_weeks, time_grid, periods, room_types, buildings, rooms, groups, subgroups, teachers, disciplines, curriculum_items]
+      properties:
+        format: { type: string, const: timetable-dataset }
+        version: { type: integer, const: 2 }
+        name: { type: string }
+        source_notes: { type: array, items: { type: string } }
+        semester_weeks: { type: integer, minimum: 1, maximum: 52, default: 18 }
+        time_grid:
+          type: object
+          required: [days, periods_per_day]
+          properties:
+            days: { type: integer, minimum: 1, maximum: 7 }
+            periods_per_day: { type: integer, minimum: 1, maximum: 16 }
+        periods:
+          type: array
+          items:
+            type: object
+            required: [number, start, end]
+            properties:
+              number: { type: integer, minimum: 1, maximum: 16 }
+              start: { $ref: "#/components/schemas/Clock" }
+              end: { $ref: "#/components/schemas/Clock" }
+        room_types:
+          type: array
+          items:
+            type: object
+            required: [code, name]
+            properties:
+              code: { $ref: "#/components/schemas/Code" }
+              name: { $ref: "#/components/schemas/Name" }
+        buildings:
+          type: array
+          items:
+            type: object
+            required: [key, name]
+            properties:
+              key: { type: string, minLength: 1 }
+              name: { $ref: "#/components/schemas/Name" }
+              address: { type: string }
+        rooms:
+          type: array
+          items:
+            type: object
+            required: [key, building, name, type, capacity]
+            properties:
+              key: { type: string, minLength: 1 }
+              building: { type: string }
+              name: { $ref: "#/components/schemas/Name" }
+              type: { type: string }
+              capacity: { type: integer, minimum: 1 }
+        groups:
+          type: array
+          items:
+            type: object
+            required: [key, course, size]
+            properties:
+              key: { type: string, minLength: 1 }
+              course: { type: integer, minimum: 0 }
+              size: { type: integer, minimum: 0 }
+        subgroups:
+          type: array
+          items:
+            type: object
+            required: [group, division, part, size]
+            properties:
+              group: { type: string }
+              division: { type: string, minLength: 1 }
+              part: { type: integer, minimum: 1 }
+              size: { type: integer, minimum: 0 }
+        teachers:
+          type: array
+          items:
+            type: object
+            required: [key, full_name]
+            properties:
+              key: { type: string, minLength: 1 }
+              full_name: { $ref: "#/components/schemas/Name" }
+              short_name: { type: string }
+        disciplines:
+          type: array
+          items:
+            type: object
+            required: [key, name]
+            properties:
+              key: { type: string, minLength: 1 }
+              name: { $ref: "#/components/schemas/Name" }
+        teacher_availability:
+          type: array
+          items:
+            type: object
+            required: [teacher, day, period, parity, status]
+            properties:
+              teacher: { type: string }
+              day: { type: integer, minimum: 0, maximum: 6 }
+              period: { type: integer, minimum: 1, maximum: 16 }
+              parity: { type: string, enum: [every, odd, even] }
+              status: { type: string, enum: [preferred, undesired, unavailable] }
+        room_availability:
+          type: array
+          items:
+            type: object
+            required: [room, day, period, parity, status]
+            properties:
+              room: { type: string }
+              day: { type: integer, minimum: 0, maximum: 6 }
+              period: { type: integer, minimum: 1, maximum: 16 }
+              parity: { type: string, enum: [every, odd, even] }
+              status: { type: string, enum: [preferred, undesired, unavailable] }
+        curriculum_items:
+          type: array
+          items:
+            type: object
+            required: [discipline, kind, teacher, room_type, semester_hours, audience]
+            properties:
+              discipline: { type: string }
+              kind: { type: string, enum: [lecture, seminar, lab] }
+              teacher: { type: string }
+              room_type: { type: string }
+              semester_hours:
+                type: integer
+                minimum: 1
+                maximum: 2080
+                description: Must not exceed 40 times semester_weeks; 2080 is the absolute maximum.
+              audience:
+                type: array
+                minItems: 1
+                items:
+                  type: object
+                  required: [group]
+                  properties:
+                    group: { type: string }
+                    division: { type: string }
+                    part: { type: integer, minimum: 0 }
 
     Error:
       type: object
@@ -878,6 +1262,116 @@ components:
           properties:
             code: { type: string, examples: [not_found] }
             message: { type: string }
+
+    ScheduleJob:
+      type: object
+      required: [id, status, stage, progress, lessons, placed, hard_violations, soft_penalty, steps, elapsed, budget_seconds]
+      properties:
+        id: { type: string, pattern: "^[0-9a-f]{32}$" }
+        status: { type: string, enum: [queued, running, completed, failed, cancelled] }
+        stage: { type: string, examples: [feasibility, optimization, completed] }
+        progress: { type: integer, minimum: 0, maximum: 100 }
+        lessons: { type: integer }
+        placed: { type: integer }
+        hard_violations: { type: integer }
+        soft_penalty: { type: number }
+        steps: { type: integer }
+        elapsed: { type: string }
+        budget_seconds: { type: integer, minimum: 1, maximum: 300 }
+        preview:
+          type: object
+          description: Current best in-memory timetable; it is not saved until generation finishes or is stopped.
+          required: [days, periods_per_day, lessons, placed, hard_violations, soft_penalty]
+          properties:
+            days: { type: integer }
+            periods_per_day: { type: integer }
+            lessons:
+              type: array
+              items:
+                type: object
+                required: [id, placed, discipline, kind, teacher, audience]
+                properties:
+                  id: { type: integer, format: int64 }
+                  placed: { type: boolean }
+                  day: { type: string, enum: [MO, TU, WE, TH, FR, SA, SU] }
+                  period: { type: integer, minimum: 1 }
+                  parity: { type: string, enum: [every, odd, even] }
+                  discipline: { type: string }
+                  kind: { type: string }
+                  teacher: { type: string }
+                  audience: { type: array, items: { type: string } }
+                  room: { type: string }
+            placed: { type: integer }
+            hard_violations: { type: integer }
+            soft_penalty: { type: number }
+        schedule_id: { type: integer, format: int64 }
+        result:
+          type: object
+          properties:
+            schedule_id: { type: integer, format: int64 }
+            name: { type: string }
+            lessons: { type: integer }
+            placed: { type: integer }
+            hard_violations: { type: integer }
+            soft_penalty: { type: number }
+            steps: { type: integer }
+            duration: { type: string }
+            cancelled: { type: boolean }
+            violations:
+              type: array
+              items:
+                type: object
+                required: [rule, message, lesson_ids, strictness]
+                properties:
+                  rule: { type: string }
+                  message: { type: string }
+                  lesson_ids: { type: array, items: { type: integer, format: int64 } }
+                  strictness: { type: string, enum: [hard, heavy_soft] }
+        error: { type: string }
+    ScheduleSummary:
+      type: object
+      required: [id, name, created_at]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+    Schedule:
+      type: object
+      required: [id, name, created_at, days, periods_per_day, periods, lessons, placed, hard_violations, soft_penalty]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+        days: { type: integer }
+        periods_per_day: { type: integer }
+        periods:
+          type: array
+          items:
+            type: object
+            required: [number, starts_at, ends_at]
+            properties:
+              number: { type: integer }
+              starts_at: { type: string }
+              ends_at: { type: string }
+        lessons:
+          type: array
+          items:
+            type: object
+            required: [id, placed, discipline, kind, teacher, audience]
+            properties:
+              id: { type: integer, format: int64 }
+              placed: { type: boolean }
+              day: { type: string, enum: [MO, TU, WE, TH, FR, SA, SU] }
+              period: { type: integer }
+              parity: { type: string, enum: [every, odd, even] }
+              discipline: { type: string }
+              kind: { type: string }
+              teacher: { type: string }
+              audience: { type: array, items: { type: string } }
+              room: { type: string }
+        placed: { type: integer }
+        hard_violations: { type: integer }
+        soft_penalty: { type: number }
 
     ReviewReport:
       type: object

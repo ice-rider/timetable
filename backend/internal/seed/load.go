@@ -58,16 +58,36 @@ func (d *Dataset) Counts() Counts {
 // transaction, together with one audit row. Running it again yields the same rows and IDs
 // (identities are restarted), so it is idempotent. The audit log is kept.
 func Load(ctx context.Context, s *store.Store, d *Dataset) (Counts, error) {
+	return LoadAs(ctx, s, d, Actor)
+}
+
+// LoadAs replaces the demo data and records the supplied authenticated actor.
+func LoadAs(ctx context.Context, s *store.Store, d *Dataset, actor store.Actor) (Counts, error) {
 	counts := d.Counts()
 	change := store.Change{
-		Entity:   "seed",
-		EntityID: "demo",
+		Entity:   "dataset",
+		EntityID: "replace",
 		After:    counts,
-		Reason:   "load demo seed dataset (replaces reference data, curriculum and schedules)",
+		Reason:   "load dataset (replaces reference data, curriculum and schedules)",
 	}
-	_, err := s.WithAudit(ctx, Actor, change, func(q *db.Queries, _ pgx.Tx, _ *store.Change) error {
-		if err := q.TruncateSeedData(ctx); err != nil {
-			return fmt.Errorf("truncate: %w", err)
+	_, err := s.WithAudit(ctx, actor, change, func(q *db.Queries, _ pgx.Tx, _ *store.Change) error {
+		cleanup := []struct {
+			name string
+			run  func() error
+		}{
+			{"timetable data", func() error { return q.TruncateSeedData(ctx) }},
+			{"groups", func() error { return q.DeleteSeedGroups(ctx) }},
+			{"teachers", func() error { return q.DeleteSeedTeachers(ctx) }},
+			{"disciplines", func() error { return q.DeleteSeedDisciplines(ctx) }},
+			{"group identities", func() error { return q.ResetSeedGroupIDs(ctx) }},
+			{"subgroup identities", func() error { return q.ResetSeedSubgroupIDs(ctx) }},
+			{"teacher identities", func() error { return q.ResetSeedTeacherIDs(ctx) }},
+			{"discipline identities", func() error { return q.ResetSeedDisciplineIDs(ctx) }},
+		}
+		for _, step := range cleanup {
+			if err := step.run(); err != nil {
+				return fmt.Errorf("clear %s: %w", step.name, err)
+			}
 		}
 		return insert(ctx, q, d)
 	})

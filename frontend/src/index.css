@@ -10,6 +10,8 @@
 
 body {
   margin: 0;
+  background: #f5f6fa;
+  color: #14171f;
 }
 
 .app-header {
@@ -233,4 +235,57 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   gap: 24px;
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.workflow-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid #e3e6ef;
+  border-radius: 12px;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+}
+
+.workflow-card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.workflow-card p {
+  margin: 0;
+  color: #5c6478;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e3e6ef;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button.primary {
+  border-color: #164acf;
+  background: #164acf;
+  color: #fff;
+}
+
+.button.secondary {
+  background: #fff;
+  color: #164acf;
 }

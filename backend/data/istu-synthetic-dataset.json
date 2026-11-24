@@ -1,0 +1,3212 @@
+{
+  "format": "timetable-dataset",
+  "version": 2,
+  "name": "Синтетическая нагрузка ИТРиП",
+  "source_notes": [
+    "Нагрузка агрегирована из расписания Расписание ФИТ - ИТРиП_12.09.2026 ФИТ-ИТРиП.xls по первым 12 группам.",
+    "Семестровые академические часы восстановлены по меткам чётности/нечётности исходного расписания при длительности семестра 18 учебных недель; одна пара равна двум академическим часам.",
+    "Размер каждой группы принят равным 25 студентам; вместимость оценена по типу аудитории и увеличена до расчётной посещаемости из расписания.",
+    "В набор включены лекции, практические и лабораторные занятия; зачёты, экзамены и записи без ровно одного преподавателя исключены."
+  ],
+  "semester_weeks": 18,
+  "time_grid": {
+    "days": 6,
+    "periods_per_day": 7
+  },
+  "periods": [
+    {
+      "number": 1,
+      "start": "08:30",
+      "end": "10:00"
+    },
+    {
+      "number": 2,
+      "start": "10:10",
+      "end": "11:40"
+    },
+    {
+      "number": 3,
+      "start": "12:20",
+      "end": "13:50"
+    },
+    {
+      "number": 4,
+      "start": "14:00",
+      "end": "15:30"
+    },
+    {
+      "number": 5,
+      "start": "15:40",
+      "end": "17:10"
+    },
+    {
+      "number": 6,
+      "start": "17:20",
+      "end": "18:50"
+    },
+    {
+      "number": 7,
+      "start": "19:00",
+      "end": "20:30"
+    }
+  ],
+  "room_types": [
+    {
+      "code": "computer",
+      "name": "Компьютерный класс"
+    },
+    {
+      "code": "general",
+      "name": "Аудитория для практических занятий"
+    },
+    {
+      "code": "lab",
+      "name": "Лаборатория"
+    },
+    {
+      "code": "lecture",
+      "name": "Лекционная аудитория"
+    },
+    {
+      "code": "seminar",
+      "name": "Аудитория для практических занятий"
+    },
+    {
+      "code": "special",
+      "name": "Специализированная аудитория"
+    },
+    {
+      "code": "sport",
+      "name": "Спортивный зал"
+    }
+  ],
+  "buildings": [
+    {
+      "key": "building-1",
+      "name": "Корпус 2"
+    },
+    {
+      "key": "building-2",
+      "name": "Корпус 3"
+    },
+    {
+      "key": "building-3",
+      "name": "Корпус 6"
+    },
+    {
+      "key": "building-4",
+      "name": "Корпус 7"
+    },
+    {
+      "key": "building-5",
+      "name": "Синтетический корпус"
+    },
+    {
+      "key": "building-6",
+      "name": "Корпус Интеграл"
+    }
+  ],
+  "rooms": [
+    {
+      "key": "room-1",
+      "building": "building-1",
+      "name": "2-121",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-2",
+      "building": "building-1",
+      "name": "2-122а",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-3",
+      "building": "building-1",
+      "name": "2-122в",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-4",
+      "building": "building-1",
+      "name": "2-124",
+      "type": "lab",
+      "capacity": 20
+    },
+    {
+      "key": "room-5",
+      "building": "building-1",
+      "name": "2-129",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-6",
+      "building": "building-1",
+      "name": "2-134/2",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-7",
+      "building": "building-1",
+      "name": "2-241",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-8",
+      "building": "building-1",
+      "name": "2-420",
+      "type": "general",
+      "capacity": 60
+    },
+    {
+      "key": "room-9",
+      "building": "building-1",
+      "name": "2-424б",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-10",
+      "building": "building-2",
+      "name": "3-1",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-11",
+      "building": "building-2",
+      "name": "3-12",
+      "type": "computer",
+      "capacity": 50
+    },
+    {
+      "key": "room-12",
+      "building": "building-2",
+      "name": "3-2",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-13",
+      "building": "building-2",
+      "name": "3-204",
+      "type": "computer",
+      "capacity": 50
+    },
+    {
+      "key": "room-14",
+      "building": "building-2",
+      "name": "3-204а",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-15",
+      "building": "building-2",
+      "name": "3-214",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-16",
+      "building": "building-2",
+      "name": "3-215",
+      "type": "general",
+      "capacity": 60
+    },
+    {
+      "key": "room-17",
+      "building": "building-2",
+      "name": "3-216",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-18",
+      "building": "building-2",
+      "name": "3-220",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-19",
+      "building": "building-2",
+      "name": "3-3",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-20",
+      "building": "building-2",
+      "name": "3-5",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-21",
+      "building": "building-2",
+      "name": "3-502",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-22",
+      "building": "building-2",
+      "name": "3-6",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-23",
+      "building": "building-2",
+      "name": "3-603а",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-24",
+      "building": "building-2",
+      "name": "3-605",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-25",
+      "building": "building-2",
+      "name": "3-609",
+      "type": "special",
+      "capacity": 80
+    },
+    {
+      "key": "room-26",
+      "building": "building-2",
+      "name": "3-714",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-27",
+      "building": "building-2",
+      "name": "3-8",
+      "type": "general",
+      "capacity": 80
+    },
+    {
+      "key": "room-28",
+      "building": "building-2",
+      "name": "3-906",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-29",
+      "building": "building-2",
+      "name": "3-БИ-14",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-30",
+      "building": "building-2",
+      "name": "3-БИ-15",
+      "type": "computer",
+      "capacity": 30
+    },
+    {
+      "key": "room-31",
+      "building": "building-3",
+      "name": "6-401",
+      "type": "computer",
+      "capacity": 50
+    },
+    {
+      "key": "room-32",
+      "building": "building-3",
+      "name": "6-402",
+      "type": "computer",
+      "capacity": 50
+    },
+    {
+      "key": "room-33",
+      "building": "building-3",
+      "name": "6-403",
+      "type": "computer",
+      "capacity": 50
+    },
+    {
+      "key": "room-34",
+      "building": "building-3",
+      "name": "6-405",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-35",
+      "building": "building-4",
+      "name": "7-215",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-36",
+      "building": "building-4",
+      "name": "7-411",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-37",
+      "building": "building-4",
+      "name": "7-424",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-38",
+      "building": "building-4",
+      "name": "7-436",
+      "type": "special",
+      "capacity": 60
+    },
+    {
+      "key": "room-39",
+      "building": "building-6",
+      "name": "Интеграл",
+      "type": "sport",
+      "capacity": 250
+    },
+    {
+      "key": "room-synthetic-lecture",
+      "building": "building-5",
+      "name": "Аудитория lecture",
+      "type": "lecture",
+      "capacity": 60
+    },
+    {
+      "key": "room-synthetic-seminar",
+      "building": "building-5",
+      "name": "Аудитория seminar",
+      "type": "seminar",
+      "capacity": 30
+    }
+  ],
+  "groups": [
+    {
+      "key": "Б23-021-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-022-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-191-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-191-11",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-191-2",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-191-3",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-781-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-782-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-782-2",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-784-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б23-791-1",
+      "course": 4,
+      "size": 25
+    },
+    {
+      "key": "Б24-021-1",
+      "course": 3,
+      "size": 25
+    }
+  ],
+  "subgroups": [
+    {
+      "group": "Б23-781-1",
+      "division": "subgroup",
+      "part": 1,
+      "size": 13
+    },
+    {
+      "group": "Б23-781-1",
+      "division": "subgroup",
+      "part": 2,
+      "size": 13
+    },
+    {
+      "group": "Б23-791-1",
+      "division": "subgroup",
+      "part": 1,
+      "size": 13
+    },
+    {
+      "group": "Б23-791-1",
+      "division": "subgroup",
+      "part": 2,
+      "size": 13
+    },
+    {
+      "group": "Б24-021-1",
+      "division": "subgroup",
+      "part": 1,
+      "size": 13
+    },
+    {
+      "group": "Б24-021-1",
+      "division": "subgroup",
+      "part": 2,
+      "size": 13
+    }
+  ],
+  "teachers": [
+    {
+      "key": "teacher-1",
+      "full_name": "Аль Аккад М."
+    },
+    {
+      "key": "teacher-2",
+      "full_name": "Архипов И.О."
+    },
+    {
+      "key": "teacher-3",
+      "full_name": "Благодатский Г.А."
+    },
+    {
+      "key": "teacher-4",
+      "full_name": "Брычкина М.С."
+    },
+    {
+      "key": "teacher-5",
+      "full_name": "Вдовин А.Ю."
+    },
+    {
+      "key": "teacher-6",
+      "full_name": "Верняева Р.А."
+    },
+    {
+      "key": "teacher-7",
+      "full_name": "Вологдин С.В."
+    },
+    {
+      "key": "teacher-8",
+      "full_name": "Ворожцова Н.А."
+    },
+    {
+      "key": "teacher-9",
+      "full_name": "Докучаев Д.Е."
+    },
+    {
+      "key": "teacher-10",
+      "full_name": "Дресвянникова С.В."
+    },
+    {
+      "key": "teacher-11",
+      "full_name": "Еланцев М.О."
+    },
+    {
+      "key": "teacher-12",
+      "full_name": "Жданова Е.А."
+    },
+    {
+      "key": "teacher-13",
+      "full_name": "Касимов Д.Р."
+    },
+    {
+      "key": "teacher-14",
+      "full_name": "Корепанов А.В."
+    },
+    {
+      "key": "teacher-15",
+      "full_name": "Корнилов И.Г."
+    },
+    {
+      "key": "teacher-16",
+      "full_name": "Коробейников А.А."
+    },
+    {
+      "key": "teacher-17",
+      "full_name": "Коробейников А.В."
+    },
+    {
+      "key": "teacher-18",
+      "full_name": "Логунова Е.Г."
+    },
+    {
+      "key": "teacher-19",
+      "full_name": "Лугачев П.П."
+    },
+    {
+      "key": "teacher-20",
+      "full_name": "Мокроусов М.Н."
+    },
+    {
+      "key": "teacher-21",
+      "full_name": "Петухов К.Ю."
+    },
+    {
+      "key": "teacher-22",
+      "full_name": "Подшивалова Е.А."
+    },
+    {
+      "key": "teacher-23",
+      "full_name": "Пономарев А.В."
+    },
+    {
+      "key": "teacher-24",
+      "full_name": "Пономаренко Е.П."
+    },
+    {
+      "key": "teacher-25",
+      "full_name": "Пономарёв С.Б."
+    },
+    {
+      "key": "teacher-26",
+      "full_name": "Попов М.О."
+    },
+    {
+      "key": "teacher-27",
+      "full_name": "Саетова Л.Г."
+    },
+    {
+      "key": "teacher-28",
+      "full_name": "Севрюгин В.Р."
+    },
+    {
+      "key": "teacher-29",
+      "full_name": "Селюнина Н.В."
+    },
+    {
+      "key": "teacher-30",
+      "full_name": "Смирнов С.В."
+    },
+    {
+      "key": "teacher-31",
+      "full_name": "Соловьева А.Н."
+    },
+    {
+      "key": "teacher-32",
+      "full_name": "Стукалина Е.Ф."
+    },
+    {
+      "key": "teacher-33",
+      "full_name": "Сяктерев В.Н."
+    },
+    {
+      "key": "teacher-34",
+      "full_name": "Терехов А.П."
+    },
+    {
+      "key": "teacher-35",
+      "full_name": "Тюрин А.П."
+    },
+    {
+      "key": "teacher-36",
+      "full_name": "Устинова Н.П."
+    },
+    {
+      "key": "teacher-37",
+      "full_name": "Шишлина Н.В."
+    }
+  ],
+  "disciplines": [
+    {
+      "key": "discipline-1",
+      "name": "Администрирование информационных систем"
+    },
+    {
+      "key": "discipline-2",
+      "name": "Базы данных"
+    },
+    {
+      "key": "discipline-3",
+      "name": "Безопасность жизнедеятельности"
+    },
+    {
+      "key": "discipline-4",
+      "name": "Высокоуровневые методы информатики и программирования"
+    },
+    {
+      "key": "discipline-5",
+      "name": "Инструментальные средства информационных систем"
+    },
+    {
+      "key": "discipline-6",
+      "name": "Интерфейсы интернета вещей"
+    },
+    {
+      "key": "discipline-7",
+      "name": "Информационные системы в экономике и управлении"
+    },
+    {
+      "key": "discipline-8",
+      "name": "Искусственный интеллект. Нейронные сети"
+    },
+    {
+      "key": "discipline-9",
+      "name": "Исследование операций и методы оптимизации"
+    },
+    {
+      "key": "discipline-10",
+      "name": "Литературное редактирование и нормативная обработка текста"
+    },
+    {
+      "key": "discipline-11",
+      "name": "Логическое и функциональное программирование"
+    },
+    {
+      "key": "discipline-12",
+      "name": "Математические основы искусственного интеллекта"
+    },
+    {
+      "key": "discipline-13",
+      "name": "Математическое и имитационное моделирование"
+    },
+    {
+      "key": "discipline-14",
+      "name": "Межкультурная профессиональная коммуникация"
+    },
+    {
+      "key": "discipline-15",
+      "name": "Методы и средства защиты компьютерной информации"
+    },
+    {
+      "key": "discipline-16",
+      "name": "Методы искусственного интеллекта"
+    },
+    {
+      "key": "discipline-17",
+      "name": "Микропроцессорные системы"
+    },
+    {
+      "key": "discipline-18",
+      "name": "Моделирование процессов и систем"
+    },
+    {
+      "key": "discipline-19",
+      "name": "Общая физическая подготовка"
+    },
+    {
+      "key": "discipline-20",
+      "name": "Операционные системы"
+    },
+    {
+      "key": "discipline-21",
+      "name": "Организация ЭВМ и систем"
+    },
+    {
+      "key": "discipline-22",
+      "name": "Основы межличностных коммуникаций в программной инженерии"
+    },
+    {
+      "key": "discipline-23",
+      "name": "Основы проектирования средств вычислительной техники"
+    },
+    {
+      "key": "discipline-24",
+      "name": "Основы проектной деятельности"
+    },
+    {
+      "key": "discipline-25",
+      "name": "Основы системного анализа"
+    },
+    {
+      "key": "discipline-26",
+      "name": "Периферийные устройства и системное программирование"
+    },
+    {
+      "key": "discipline-27",
+      "name": "Правовые основы информационной безопасности"
+    },
+    {
+      "key": "discipline-28",
+      "name": "Программирование 1С"
+    },
+    {
+      "key": "discipline-29",
+      "name": "Проектирование и конструирование программного обеспечения"
+    },
+    {
+      "key": "discipline-30",
+      "name": "Проектирование информационных систем"
+    },
+    {
+      "key": "discipline-31",
+      "name": "Проектирование пользовательских интерфейсов"
+    },
+    {
+      "key": "discipline-32",
+      "name": "Проектирование систем на программируемых логических интегральных схемах"
+    },
+    {
+      "key": "discipline-33",
+      "name": "Проектный практикум"
+    },
+    {
+      "key": "discipline-34",
+      "name": "Разработка игровых интерфейсов"
+    },
+    {
+      "key": "discipline-35",
+      "name": "Системы искусственного интеллекта"
+    },
+    {
+      "key": "discipline-36",
+      "name": "Социальное взаимодействие"
+    },
+    {
+      "key": "discipline-37",
+      "name": "Теория информации"
+    },
+    {
+      "key": "discipline-38",
+      "name": "Теория цифровой обработки сигналов"
+    },
+    {
+      "key": "discipline-39",
+      "name": "Тестирование программного обеспечения"
+    },
+    {
+      "key": "discipline-40",
+      "name": "Управление информационными ресурсами"
+    },
+    {
+      "key": "discipline-41",
+      "name": "Формальные языки и трансляторы"
+    },
+    {
+      "key": "discipline-42",
+      "name": "Цифровая обработка изображений"
+    },
+    {
+      "key": "discipline-43",
+      "name": "Языки и форматы разметки лингвистических данных"
+    }
+  ],
+  "curriculum_items": [
+    {
+      "discipline": "discipline-1",
+      "kind": "lab",
+      "teacher": "teacher-30",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-1",
+      "kind": "lecture",
+      "teacher": "teacher-30",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-1",
+      "kind": "seminar",
+      "teacher": "teacher-30",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-2",
+      "kind": "lab",
+      "teacher": "teacher-9",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-2",
+      "kind": "lecture",
+      "teacher": "teacher-9",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-2",
+      "kind": "seminar",
+      "teacher": "teacher-9",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-29",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "lecture",
+      "teacher": "teacher-34",
+      "room_type": "sport",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        },
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        },
+        {
+          "group": "Б23-781-1"
+        },
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        },
+        {
+          "group": "Б23-784-1"
+        },
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-34",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "lecture",
+      "teacher": "teacher-35",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-3",
+      "kind": "seminar",
+      "teacher": "teacher-35",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-4",
+      "kind": "lab",
+      "teacher": "teacher-3",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-4",
+      "kind": "lecture",
+      "teacher": "teacher-3",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-4",
+      "kind": "seminar",
+      "teacher": "teacher-3",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-5",
+      "kind": "lab",
+      "teacher": "teacher-3",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-5",
+      "kind": "lecture",
+      "teacher": "teacher-3",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-6",
+      "kind": "lab",
+      "teacher": "teacher-15",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-6",
+      "kind": "lecture",
+      "teacher": "teacher-15",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "lecture",
+      "teacher": "teacher-19",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "lab",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-7",
+      "kind": "seminar",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-8",
+      "kind": "lab",
+      "teacher": "teacher-17",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-8",
+      "kind": "lecture",
+      "teacher": "teacher-17",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-8",
+      "kind": "seminar",
+      "teacher": "teacher-17",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-9",
+      "kind": "lab",
+      "teacher": "teacher-27",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-9",
+      "kind": "lab",
+      "teacher": "teacher-27",
+      "room_type": "computer",
+      "semester_hours": 54,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-9",
+      "kind": "lecture",
+      "teacher": "teacher-27",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-9",
+      "kind": "seminar",
+      "teacher": "teacher-27",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-10",
+      "kind": "lab",
+      "teacher": "teacher-12",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-10",
+      "kind": "lecture",
+      "teacher": "teacher-12",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-10",
+      "kind": "seminar",
+      "teacher": "teacher-12",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lab",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lecture",
+      "teacher": "teacher-19",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lab",
+      "teacher": "teacher-23",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "lecture",
+      "teacher": "teacher-23",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-11",
+      "kind": "seminar",
+      "teacher": "teacher-23",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lab",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lab",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lab",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lecture",
+      "teacher": "teacher-4",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "seminar",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "seminar",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "seminar",
+      "teacher": "teacher-4",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lab",
+      "teacher": "teacher-17",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "lecture",
+      "teacher": "teacher-17",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-12",
+      "kind": "seminar",
+      "teacher": "teacher-17",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-13",
+      "kind": "lab",
+      "teacher": "teacher-25",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-13",
+      "kind": "lecture",
+      "teacher": "teacher-25",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-13",
+      "kind": "seminar",
+      "teacher": "teacher-25",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-14",
+      "kind": "seminar",
+      "teacher": "teacher-24",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-15",
+      "kind": "lecture",
+      "teacher": "teacher-5",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-15",
+      "kind": "seminar",
+      "teacher": "teacher-5",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-15",
+      "kind": "lab",
+      "teacher": "teacher-22",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "lab",
+      "teacher": "teacher-7",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "lab",
+      "teacher": "teacher-7",
+      "room_type": "computer",
+      "semester_hours": 54,
+      "audience": [
+        {
+          "group": "Б23-791-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "lecture",
+      "teacher": "teacher-7",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "lecture",
+      "teacher": "teacher-7",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "seminar",
+      "teacher": "teacher-7",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-16",
+      "kind": "seminar",
+      "teacher": "teacher-7",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-17",
+      "kind": "lab",
+      "teacher": "teacher-15",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-17",
+      "kind": "lecture",
+      "teacher": "teacher-15",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-17",
+      "kind": "seminar",
+      "teacher": "teacher-15",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-18",
+      "kind": "lab",
+      "teacher": "teacher-25",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-18",
+      "kind": "lecture",
+      "teacher": "teacher-25",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-19",
+      "kind": "seminar",
+      "teacher": "teacher-10",
+      "room_type": "seminar",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-20",
+      "kind": "lab",
+      "teacher": "teacher-9",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-20",
+      "kind": "lecture",
+      "teacher": "teacher-9",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-21",
+      "kind": "lab",
+      "teacher": "teacher-21",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-21",
+      "kind": "lecture",
+      "teacher": "teacher-21",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-21",
+      "kind": "seminar",
+      "teacher": "teacher-21",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "lecture",
+      "teacher": "teacher-19",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "seminar",
+      "teacher": "teacher-19",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "lecture",
+      "teacher": "teacher-26",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-22",
+      "kind": "seminar",
+      "teacher": "teacher-26",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-23",
+      "kind": "lab",
+      "teacher": "teacher-33",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-23",
+      "kind": "lecture",
+      "teacher": "teacher-33",
+      "room_type": "lab",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-23",
+      "kind": "seminar",
+      "teacher": "teacher-33",
+      "room_type": "lab",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-24",
+      "kind": "lecture",
+      "teacher": "teacher-36",
+      "room_type": "lecture",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-24",
+      "kind": "seminar",
+      "teacher": "teacher-37",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-25",
+      "kind": "lecture",
+      "teacher": "teacher-8",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        },
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-25",
+      "kind": "seminar",
+      "teacher": "teacher-8",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-25",
+      "kind": "seminar",
+      "teacher": "teacher-8",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-25",
+      "kind": "seminar",
+      "teacher": "teacher-8",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "lab",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "lab",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "lecture",
+      "teacher": "teacher-1",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "seminar",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "seminar",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "seminar",
+      "teacher": "teacher-1",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "lab",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "lecture",
+      "teacher": "teacher-26",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-26",
+      "kind": "seminar",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-27",
+      "kind": "lecture",
+      "teacher": "teacher-32",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-27",
+      "kind": "seminar",
+      "teacher": "teacher-32",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-28",
+      "kind": "lab",
+      "teacher": "teacher-31",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-28",
+      "kind": "lab",
+      "teacher": "teacher-31",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-28",
+      "kind": "lecture",
+      "teacher": "teacher-31",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "lab",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "lab",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "lab",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "lecture",
+      "teacher": "teacher-11",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "seminar",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "seminar",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "seminar",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "lab",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-29",
+      "kind": "seminar",
+      "teacher": "teacher-26",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "lab",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "lab",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "lab",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 54,
+      "audience": [
+        {
+          "group": "Б23-791-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "lab",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-791-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "lecture",
+      "teacher": "teacher-14",
+      "room_type": "general",
+      "semester_hours": 54,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        },
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "seminar",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-791-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-30",
+      "kind": "seminar",
+      "teacher": "teacher-14",
+      "room_type": "general",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        },
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-31",
+      "kind": "lab",
+      "teacher": "teacher-37",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-31",
+      "kind": "lecture",
+      "teacher": "teacher-37",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-31",
+      "kind": "seminar",
+      "teacher": "teacher-37",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-32",
+      "kind": "lab",
+      "teacher": "teacher-21",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-32",
+      "kind": "lecture",
+      "teacher": "teacher-21",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-32",
+      "kind": "seminar",
+      "teacher": "teacher-21",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-781-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-33",
+      "kind": "lab",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-33",
+      "kind": "lecture",
+      "teacher": "teacher-14",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-33",
+      "kind": "seminar",
+      "teacher": "teacher-14",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-34",
+      "kind": "lab",
+      "teacher": "teacher-11",
+      "room_type": "computer",
+      "semester_hours": 72,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-34",
+      "kind": "lecture",
+      "teacher": "teacher-11",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-35",
+      "kind": "lab",
+      "teacher": "teacher-20",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-35",
+      "kind": "lab",
+      "teacher": "teacher-20",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-35",
+      "kind": "lab",
+      "teacher": "teacher-20",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-35",
+      "kind": "lecture",
+      "teacher": "teacher-20",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        },
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-36",
+      "kind": "lecture",
+      "teacher": "teacher-18",
+      "room_type": "sport",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-36",
+      "kind": "seminar",
+      "teacher": "teacher-18",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-37",
+      "kind": "lab",
+      "teacher": "teacher-27",
+      "room_type": "computer",
+      "semester_hours": 54,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 1
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-37",
+      "kind": "lab",
+      "teacher": "teacher-27",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б24-021-1",
+          "division": "subgroup",
+          "part": 2
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-37",
+      "kind": "lecture",
+      "teacher": "teacher-27",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б24-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lab",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lecture",
+      "teacher": "teacher-1",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "seminar",
+      "teacher": "teacher-1",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-11"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lab",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lab",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lab",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "lecture",
+      "teacher": "teacher-2",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        },
+        {
+          "group": "Б23-191-2"
+        },
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "seminar",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "seminar",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-38",
+      "kind": "seminar",
+      "teacher": "teacher-2",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-191-3"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "lab",
+      "teacher": "teacher-16",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "lab",
+      "teacher": "teacher-16",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "lab",
+      "teacher": "teacher-16",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "lecture",
+      "teacher": "teacher-16",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        },
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "seminar",
+      "teacher": "teacher-16",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "seminar",
+      "teacher": "teacher-16",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-39",
+      "kind": "seminar",
+      "teacher": "teacher-16",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-40",
+      "kind": "lab",
+      "teacher": "teacher-30",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-40",
+      "kind": "lecture",
+      "teacher": "teacher-30",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-021-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-41",
+      "kind": "lab",
+      "teacher": "teacher-13",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-41",
+      "kind": "lab",
+      "teacher": "teacher-13",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-41",
+      "kind": "lecture",
+      "teacher": "teacher-13",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-41",
+      "kind": "seminar",
+      "teacher": "teacher-13",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-41",
+      "kind": "seminar",
+      "teacher": "teacher-13",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "lab",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "lab",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "lab",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "lecture",
+      "teacher": "teacher-28",
+      "room_type": "general",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        },
+        {
+          "group": "Б23-782-2"
+        },
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "seminar",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "seminar",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-782-2"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-42",
+      "kind": "seminar",
+      "teacher": "teacher-28",
+      "room_type": "computer",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-784-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-43",
+      "kind": "lab",
+      "teacher": "teacher-6",
+      "room_type": "special",
+      "semester_hours": 18,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    },
+    {
+      "discipline": "discipline-43",
+      "kind": "lecture",
+      "teacher": "teacher-6",
+      "room_type": "special",
+      "semester_hours": 36,
+      "audience": [
+        {
+          "group": "Б23-022-1"
+        }
+      ]
+    }
+  ]
+}

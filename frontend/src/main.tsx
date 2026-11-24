@@ -3,6 +3,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
 import './index.css'
+import './scheduler.css'
+import './visualizer/visualizer.css'
 import { router } from './router.tsx'
 
 const queryClient = new QueryClient()

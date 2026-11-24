@@ -18,17 +18,21 @@ import (
 type Deps struct {
 	// Store is nil when the server runs without a database; data endpoints then answer 503.
 	Store *store.Store
+	// AllowDemoSeed enables the destructive synthetic-data loader in local development.
+	AllowDemoSeed bool
 	// Auth handles sessions. When nil, a service with a random secret and no store is used.
 	Auth   *auth.Service
 	Logger *slog.Logger
 }
 
 type server struct {
-	store  *store.Store
-	auth   *auth.Service
-	logger *slog.Logger
-	mux    *http.ServeMux
-	routes []string
+	store         *store.Store
+	auth          *auth.Service
+	logger        *slog.Logger
+	mux           *http.ServeMux
+	routes        []string
+	jobs          *jobManager
+	allowDemoSeed bool
 }
 
 // NewRouter builds the HTTP handler with all API routes.
@@ -43,7 +47,10 @@ func newServer(d Deps) *server {
 	if d.Auth == nil {
 		d.Auth = auth.NewService(nil, auth.Config{Secret: []byte(rand.Text() + rand.Text())}, d.Logger)
 	}
-	s := &server{store: d.Store, auth: d.Auth, logger: d.Logger, mux: http.NewServeMux()}
+	s := &server{
+		store: d.Store, auth: d.Auth, logger: d.Logger, mux: http.NewServeMux(),
+		allowDemoSeed: d.AllowDemoSeed,
+	}
 
 	s.handle("GET /api/healthz", http.HandlerFunc(handleHealthz))
 	s.handle("GET /api/openapi.yaml", http.HandlerFunc(handleOpenAPI))
@@ -53,6 +60,9 @@ func newServer(d Deps) *server {
 	}
 	s.registerReference()
 	s.registerReview()
+	s.registerGeneration()
+	s.registerDemoData()
+	s.registerDataset()
 	return s
 }
 

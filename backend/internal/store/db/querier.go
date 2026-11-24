@@ -37,6 +37,9 @@ type Querier interface {
 	DeleteRoom(ctx context.Context, id int64) (int64, error)
 	DeleteRoomType(ctx context.Context, code string) (int64, error)
 	DeleteSchedule(ctx context.Context, id int64) (int64, error)
+	DeleteSeedDisciplines(ctx context.Context) error
+	DeleteSeedGroups(ctx context.Context) error
+	DeleteSeedTeachers(ctx context.Context) error
 	DeleteSession(ctx context.Context, id int64) (int64, error)
 	DeleteSubgroup(ctx context.Context, id int64) (int64, error)
 	DeleteSubgroupOf(ctx context.Context, arg DeleteSubgroupOfParams) (int64, error)
@@ -81,10 +84,12 @@ type Querier interface {
 	ListTeacherAvailabilityOf(ctx context.Context, teacherID int64) ([]TeacherAvailability, error)
 	ListTeachers(ctx context.Context) ([]Teacher, error)
 	LockSchedule(ctx context.Context, id int64) (int64, error)
+	ResetSeedDisciplineIDs(ctx context.Context) error
+	ResetSeedGroupIDs(ctx context.Context) error
+	ResetSeedSubgroupIDs(ctx context.Context) error
+	ResetSeedTeacherIDs(ctx context.Context) error
 	SetRoomAvailability(ctx context.Context, arg SetRoomAvailabilityParams) error
 	SetTeacherAvailability(ctx context.Context, arg SetTeacherAvailabilityParams) error
-	// Wipes reference data, curriculum, lessons and schedules (not the audit log) and restarts
-	// identities. Used by the demo seed (cmd/seed) to reload its dataset idempotently.
 	TruncateSeedData(ctx context.Context) error
 	UpdateBuilding(ctx context.Context, arg UpdateBuildingParams) (Building, error)
 	UpdateCurriculumItem(ctx context.Context, arg UpdateCurriculumItemParams) (CurriculumItem, error)

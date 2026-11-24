@@ -7,6 +7,7 @@ import (
 
 	"github.com/istu-pro-dev/timetable/backend/internal/seed"
 	"github.com/istu-pro-dev/timetable/backend/internal/store"
+	"github.com/istu-pro-dev/timetable/backend/internal/store/db"
 	"github.com/istu-pro-dev/timetable/backend/internal/store/storetest"
 )
 
@@ -43,6 +44,17 @@ func TestLoadIsIdempotent(t *testing.T) {
 		t.Fatalf("first load: %v", err)
 	}
 	after1 := tableCounts(ctx, t, s)
+	user, err := s.CreateUser(ctx, db.CreateUserParams{
+		Login: "demo-admin", PasswordHash: "test-hash", Role: db.UserRoleAdmin, DisplayName: "Demo admin",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Pool().Exec(ctx,
+		"UPDATE users SET group_id = 1, teacher_id = 1 WHERE id = $1", user.ID,
+	); err != nil {
+		t.Fatal(err)
+	}
 	second, err := seed.Load(ctx, s, d)
 	if err != nil {
 		t.Fatalf("second load: %v", err)
@@ -88,6 +100,18 @@ func TestLoadIsIdempotent(t *testing.T) {
 	if schedules != 0 || dupTeachers != 0 || maxGroupID != len(d.Groups) || audits != 2 {
 		t.Fatalf("schedules=%d duplicate teachers=%d max group id=%d audit rows=%d",
 			schedules, dupTeachers, maxGroupID, audits)
+	}
+	var persistedUsers, nullBindings int
+	if err := pool.QueryRow(ctx, "SELECT count(*) FROM users WHERE id = $1", user.ID).Scan(&persistedUsers); err != nil {
+		t.Fatal(err)
+	}
+	if err := pool.QueryRow(ctx,
+		"SELECT count(*) FROM users WHERE id = $1 AND group_id IS NULL AND teacher_id IS NULL", user.ID,
+	).Scan(&nullBindings); err != nil {
+		t.Fatal(err)
+	}
+	if persistedUsers != 1 || nullBindings != 1 {
+		t.Fatalf("seed reload affected users: persisted=%d with cleared entity bindings=%d", persistedUsers, nullBindings)
 	}
 
 	var weekly, biweekly int

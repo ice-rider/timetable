@@ -31,3 +31,23 @@ func TestHealthzRejectsPost(t *testing.T) {
 		t.Fatalf("status = %d, want %d", rec.Code, http.StatusMethodNotAllowed)
 	}
 }
+
+func TestGenerationAndScheduleRoutesRequireAuthentication(t *testing.T) {
+	for _, test := range []struct {
+		method, path string
+	}{
+		{http.MethodPost, "/api/schedule-jobs"},
+		{http.MethodGet, "/api/schedules"},
+		{http.MethodPost, "/api/demo/dataset"},
+		{http.MethodGet, "/api/dataset/template"},
+		{http.MethodPost, "/api/dataset"},
+	} {
+		t.Run(test.method+" "+test.path, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+			NewRouter(Deps{}).ServeHTTP(rec, httptest.NewRequestWithContext(t.Context(), test.method, test.path, nil))
+			if rec.Code != http.StatusUnauthorized {
+				t.Fatalf("status = %d, want %d", rec.Code, http.StatusUnauthorized)
+			}
+		})
+	}
+}

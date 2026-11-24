@@ -63,8 +63,10 @@ func run(logger *slog.Logger) error {
 	}
 
 	srv := &http.Server{
-		Addr:              addr,
-		Handler:           api.NewRouter(api.Deps{Store: st, Auth: authSvc, Logger: logger}),
+		Addr: addr,
+		Handler: api.NewRouter(api.Deps{
+			Store: st, Auth: authSvc, Logger: logger, AllowDemoSeed: os.Getenv("APP_ENV") == "dev",
+		}),
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 

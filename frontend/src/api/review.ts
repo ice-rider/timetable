@@ -10,12 +10,13 @@ export interface Member {
 }
 
 export type Parity = 'every' | 'odd' | 'even'
+export type Day = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 
 export interface Lesson {
   id: number
   refs: SourceRef[]
   audience: Member[]
-  day: string
+  day: Day
   period: number
   parity: Parity
   lesson_type: string
@@ -33,7 +34,7 @@ export interface Violation {
   message: string
   lesson_ids: number[]
   resource?: { kind: 'teacher' | 'group' | 'room'; name: string }
-  day?: string
+  day?: Day
   period?: number
 }
 

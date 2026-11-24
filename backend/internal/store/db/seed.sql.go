@@ -9,15 +9,76 @@ import (
 	"context"
 )
 
-const truncateSeedData = `-- name: TruncateSeedData :exec
-TRUNCATE time_grid, periods, buildings, room_types, rooms, groups, subgroups, teachers,
-    disciplines, teacher_availability, room_availability, curriculum_items, curriculum_audience,
-    lessons, schedules, assignments
-    RESTART IDENTITY CASCADE
+const deleteSeedDisciplines = `-- name: DeleteSeedDisciplines :exec
+DELETE FROM disciplines
 `
 
-// Wipes reference data, curriculum, lessons and schedules (not the audit log) and restarts
-// identities. Used by the demo seed (cmd/seed) to reload its dataset idempotently.
+func (q *Queries) DeleteSeedDisciplines(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteSeedDisciplines)
+	return err
+}
+
+const deleteSeedGroups = `-- name: DeleteSeedGroups :exec
+DELETE FROM groups
+`
+
+func (q *Queries) DeleteSeedGroups(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteSeedGroups)
+	return err
+}
+
+const deleteSeedTeachers = `-- name: DeleteSeedTeachers :exec
+DELETE FROM teachers
+`
+
+func (q *Queries) DeleteSeedTeachers(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, deleteSeedTeachers)
+	return err
+}
+
+const resetSeedDisciplineIDs = `-- name: ResetSeedDisciplineIDs :exec
+ALTER TABLE disciplines ALTER COLUMN id RESTART WITH 1
+`
+
+func (q *Queries) ResetSeedDisciplineIDs(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, resetSeedDisciplineIDs)
+	return err
+}
+
+const resetSeedGroupIDs = `-- name: ResetSeedGroupIDs :exec
+ALTER TABLE groups ALTER COLUMN id RESTART WITH 1
+`
+
+func (q *Queries) ResetSeedGroupIDs(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, resetSeedGroupIDs)
+	return err
+}
+
+const resetSeedSubgroupIDs = `-- name: ResetSeedSubgroupIDs :exec
+ALTER TABLE subgroups ALTER COLUMN id RESTART WITH 1
+`
+
+func (q *Queries) ResetSeedSubgroupIDs(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, resetSeedSubgroupIDs)
+	return err
+}
+
+const resetSeedTeacherIDs = `-- name: ResetSeedTeacherIDs :exec
+ALTER TABLE teachers ALTER COLUMN id RESTART WITH 1
+`
+
+func (q *Queries) ResetSeedTeacherIDs(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, resetSeedTeacherIDs)
+	return err
+}
+
+const truncateSeedData = `-- name: TruncateSeedData :exec
+TRUNCATE assignment_audience, assignments, schedules, lessons, curriculum_audience,
+    curriculum_items, room_availability, rooms, buildings, room_types, periods, time_grid,
+    teacher_availability
+    RESTART IDENTITY
+`
+
 func (q *Queries) TruncateSeedData(ctx context.Context) error {
 	_, err := q.db.Exec(ctx, truncateSeedData)
 	return err

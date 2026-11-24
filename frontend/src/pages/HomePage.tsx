@@ -19,10 +19,25 @@ export function HomePage() {
       <p>
         API: <span data-testid="api-status">{status}</span>
       </p>
-      <p>
-        <Link to="/review">Проверить расписание</Link> — загрузить файл из «Тандема» и посмотреть
-        накладки, окна и переходы между корпусами.
-      </p>
+      <div className="workflow-grid">
+        <article className="workflow-card">
+          <h2>Планирование расписания</h2>
+          <p>
+            Откройте рабочее место: загрузите учебные данные, запустите генерацию и выберите
+            сохранённый результат.
+          </p>
+          <Link className="button primary" to="/make-timetable">
+            Открыть рабочее место
+          </Link>
+        </article>
+        <article className="workflow-card">
+          <h2>Визуализировать расписание</h2>
+          <p>Загрузите Excel или JSON расписания, чтобы просмотреть сетку и нарушения.</p>
+          <Link className="button secondary" to="/vizualize-timetable">
+            Открыть визуализатор
+          </Link>
+        </article>
+      </div>
     </section>
   )
 }

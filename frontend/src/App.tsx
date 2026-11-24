@@ -7,9 +7,10 @@ export function App() {
         <span className="app-title">Расписание</span>
         <nav>
           <NavLink to="/" end>
-            Главная
+            Рабочее место
           </NavLink>
-          <NavLink to="/review">Проверка расписания</NavLink>
+          <NavLink to="/make-timetable">Составить расписание</NavLink>
+          <NavLink to="/vizualize-timetable">Визуализировать</NavLink>
         </nav>
       </header>
       <main className="app-main">

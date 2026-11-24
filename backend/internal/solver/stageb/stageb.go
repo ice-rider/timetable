@@ -44,6 +44,8 @@ type Options struct {
 	T0, TEnd float64
 	// Resume continues from a saved state (same problem and options).
 	Resume *State
+	// OnProgress receives the current best schedule periodically while Run is active.
+	OnProgress func(Snapshot)
 }
 
 // hardWeight makes one hard conflict cost more than any realistic soft gain, so an
@@ -52,12 +54,13 @@ const hardWeight = 1e6
 
 // Snapshot is the best schedule found so far.
 type Snapshot struct {
-	Assignments []engine.Assignment
-	Cost        float64
-	Soft        soft.Breakdown
-	Changes     int
-	Step        int64
-	Elapsed     time.Duration
+	Assignments    []engine.Assignment
+	Cost           float64
+	Soft           soft.Breakdown
+	HardViolations int
+	Changes        int
+	Step           int64
+	Elapsed        time.Duration
 }
 
 // State is what a checkpoint needs to continue a run (issue #52).
@@ -185,7 +188,7 @@ func (o *Optimizer) State() State { return o.state }
 func (o *Optimizer) saveBest(step int64, elapsed time.Duration) {
 	o.best.Store(&Snapshot{
 		Assignments: o.s.Assignments(), Cost: o.cur, Soft: o.curSoft, Changes: o.changes,
-		Step: step, Elapsed: elapsed,
+		HardViolations: o.hardCount(), Step: step, Elapsed: elapsed,
 	})
 }
 
@@ -237,8 +240,22 @@ func (o *Optimizer) try(m move.Move) (delta, move.Move, bool) {
 func (o *Optimizer) Run(ctx context.Context) Stats {
 	start := time.Now()
 	st := Stats{Initial: *o.Best(), HardBefore: o.hardCount()}
+	reportProgress := func(elapsed time.Duration) {
+		if o.opt.OnProgress == nil {
+			return
+		}
+		best := o.Best()
+		if best == nil {
+			return
+		}
+		snapshot := *best
+		snapshot.Assignments = slices.Clone(best.Assignments)
+		snapshot.Elapsed = elapsed
+		o.opt.OnProgress(snapshot)
+	}
 	if len(o.moves) == 0 {
 		st.Final, st.HardAfter = st.Initial, st.HardBefore
+		reportProgress(0)
 		return st
 	}
 	t0, tEnd := o.opt.T0, o.opt.TEnd
@@ -265,6 +282,7 @@ func (o *Optimizer) Run(ctx context.Context) Stats {
 				break
 			}
 			temp = t0 * math.Pow(tEnd/t0, frac)
+			reportProgress(elapsed)
 		}
 		step++
 		m, ok := o.propose()
@@ -310,6 +328,7 @@ func (o *Optimizer) Run(ctx context.Context) Stats {
 	st.Duration = time.Since(start)
 	st.Final = *best
 	st.HardAfter = o.hardCount()
+	reportProgress(elapsed0 + st.Duration)
 	return st
 }
 

@@ -35,4 +35,20 @@ describe('HomePage', () => {
     renderPage()
     expect(await screen.findByText('недоступен')).toBeInTheDocument()
   })
+
+  it('offers the two timetable entry points', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(Response.json({ status: 'ok' }))),
+    )
+    renderPage()
+    expect(await screen.findByRole('link', { name: 'Открыть рабочее место' })).toHaveAttribute(
+      'href',
+      '/make-timetable',
+    )
+    expect(screen.getByRole('link', { name: 'Открыть визуализатор' })).toHaveAttribute(
+      'href',
+      '/vizualize-timetable',
+    )
+  })
 })

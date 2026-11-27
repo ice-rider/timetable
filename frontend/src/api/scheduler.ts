@@ -1,4 +1,21 @@
-import { getJSON, postJSON } from './client.ts'
+import { deleteJSON, getJSON, postJSON, putJSON } from './client.ts'
+
+export interface WeightProfile {
+  id: number
+  name: string
+  weights: Record<string, number>
+  created_at: string
+  updated_at: string
+}
+
+export interface ScheduleCriterion {
+  key: string
+  title: string
+  value: number
+  weight: number
+  weighted: number
+  available: boolean
+}
 
 export interface ScheduleSummary {
   id: number
@@ -17,6 +34,8 @@ export interface GenerationResult {
   duration: string
   cancelled: boolean
   violations: { rule: string; message: string; lesson_ids: number[]; strictness: string }[]
+  weight_profile_id?: number
+  weights_snapshot?: Record<string, number>
 }
 
 export interface GenerationJob {
@@ -35,6 +54,8 @@ export interface GenerationJob {
   schedule_id?: number
   result?: GenerationResult
   error?: string
+  weight_profile_id?: number
+  weights_snapshot?: Record<string, number>
 }
 
 export interface GenerationPreview {
@@ -68,6 +89,9 @@ export interface Schedule {
   placed: number
   hard_violations: number
   soft_penalty: number
+  weight_profile_id?: number
+  weights_snapshot?: Record<string, number>
+  soft?: ScheduleCriterion[]
 }
 
 export interface DatasetSummary {
@@ -131,8 +155,39 @@ export function getGenerationJob(id: string, signal?: AbortSignal): Promise<Gene
 export async function startGeneration(input: {
   name: string
   budget_seconds: number
+  seed?: number
+  weight_profile_id?: number | null
+  weights?: Record<string, number>
+  stop_when_zero?: boolean
+  total_budget_seconds?: number
 }): Promise<GenerationJob> {
   return postJSON('/api/schedule-jobs', input)
+}
+
+export function listWeightProfiles(signal?: AbortSignal): Promise<WeightProfile[]> {
+  return getJSON('/api/weight-profiles', signal)
+}
+
+export function getWeightProfile(id: number, signal?: AbortSignal): Promise<WeightProfile> {
+  return getJSON(`/api/weight-profiles/${id}`, signal)
+}
+
+export function createWeightProfile(input: {
+  name: string
+  weights: Record<string, number>
+}): Promise<WeightProfile> {
+  return postJSON('/api/weight-profiles', input)
+}
+
+export function updateWeightProfile(
+  id: number,
+  input: { name: string; weights: Record<string, number> },
+): Promise<WeightProfile> {
+  return putJSON(`/api/weight-profiles/${id}`, input)
+}
+
+export async function deleteWeightProfile(id: number): Promise<void> {
+  await deleteJSON(`/api/weight-profiles/${id}`)
 }
 
 export async function stopGeneration(id: string): Promise<GenerationJob> {

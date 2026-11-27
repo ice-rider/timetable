@@ -1,5 +1,5 @@
 -- name: TruncateSeedData :exec
-TRUNCATE assignment_audience, assignments, schedules, lessons, curriculum_audience,
+TRUNCATE assignment_audience, assignments, schedule_jobs, schedules, lessons, curriculum_audience,
     curriculum_items, room_availability, rooms, buildings, room_types, periods, time_grid,
     teacher_availability
     RESTART IDENTITY;

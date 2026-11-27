@@ -8,7 +8,6 @@ import {
   serializeSchedule,
 } from '../api/scheduleExport.ts'
 import { downloadScheduleExcel } from '../api/scheduleExcelExport.ts'
-import { DatasetEditor } from './DatasetEditor.tsx'
 import {
   fetchDatasetSummary,
   getDemoDatasetStatus,
@@ -16,12 +15,20 @@ import {
   getSchedule,
   listSchedules,
   loadDemoDataset,
+  createWeightProfile,
+  deleteWeightProfile,
+  listWeightProfiles,
   startGeneration,
   stopGeneration,
+  updateWeightProfile,
   type GenerationPreview,
   type GenerationJob,
   type Schedule,
+  type WeightProfile,
 } from '../api/scheduler.ts'
+import { DatasetEditor } from './DatasetEditor.tsx'
+import { WeightProfileEditor } from './WeightProfileEditor.tsx'
+import { DEFAULT_WEIGHTS, normalizeWeights, type Weights } from '../schedulerWeights.ts'
 
 const DAYS = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
 const DAY_LABELS: Record<string, string> = {
@@ -127,6 +134,8 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
   const [selectedScheduleID, setSelectedScheduleID] = useState<number | null>(null)
   const [scheduleName, setScheduleName] = useState('Рабочее расписание')
   const [budget, setBudget] = useState(30)
+  const [weights, setWeights] = useState<Weights>({ ...DEFAULT_WEIGHTS })
+  const [selectedWeightProfileID, setSelectedWeightProfileID] = useState<number | null>(null)
   const [filterKind, setFilterKind] = useState<'group' | 'teacher' | 'room'>('group')
   const [filterName, setFilterName] = useState('')
   const [week, setWeek] = useState<'odd' | 'even'>('odd')
@@ -141,6 +150,10 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
   const demoStatus = useQuery({
     queryKey: ['demo-dataset-status'],
     queryFn: ({ signal }) => getDemoDatasetStatus(signal),
+  })
+  const weightProfiles = useQuery({
+    queryKey: ['weight-profiles'],
+    queryFn: ({ signal }) => listWeightProfiles(signal),
   })
   const schedules = useQuery({
     queryKey: ['schedules'],
@@ -170,12 +183,38 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
     }
   }, [job.data?.schedule_id, job.data?.status, queryClient])
   const start = useMutation({
-    mutationFn: () => startGeneration({ name: scheduleName, budget_seconds: budget }),
+    mutationFn: () =>
+      startGeneration({
+        name: scheduleName,
+        budget_seconds: budget,
+        weight_profile_id: selectedWeightProfileID,
+        weights,
+      }),
     onSuccess: (created) => {
       setJobID(created.id)
       setSelectedScheduleID(null)
       localStorage.setItem('timetable-generation-job', created.id)
       setNotice('')
+    },
+  })
+  const saveWeightProfile = useMutation({
+    mutationFn: ({ name, weights }: { name: string; weights: Weights }) => {
+      if (selectedWeightProfileID != null)
+        return updateWeightProfile(selectedWeightProfileID, { name, weights })
+      return createWeightProfile({ name, weights })
+    },
+    onSuccess: (profile: WeightProfile) => {
+      setSelectedWeightProfileID(profile.id)
+      setWeights(normalizeWeights(profile.weights))
+      void queryClient.invalidateQueries({ queryKey: ['weight-profiles'] })
+    },
+  })
+  const removeWeightProfile = useMutation({
+    mutationFn: (id: number) => deleteWeightProfile(id),
+    onSuccess: () => {
+      setSelectedWeightProfileID(null)
+      setWeights({ ...DEFAULT_WEIGHTS })
+      void queryClient.invalidateQueries({ queryKey: ['weight-profiles'] })
     },
   })
   const loadDemo = useMutation({
@@ -325,6 +364,29 @@ function Workspace({ user, onLogout }: { user: User; onLogout: () => void }) {
               <option value={300}>5 минут · максимум</option>
             </select>
           </label>
+          <WeightProfileEditor
+            weights={weights}
+            onChange={(next) => {
+              setWeights(next)
+              setSelectedWeightProfileID(null)
+            }}
+            profiles={weightProfiles.data ?? []}
+            selectedProfileId={selectedWeightProfileID}
+            onSelectProfile={(id) => {
+              setSelectedWeightProfileID(id)
+              const profile = (weightProfiles.data ?? []).find((p) => p.id === id)
+              if (profile) setWeights(normalizeWeights(profile.weights))
+              else setWeights({ ...DEFAULT_WEIGHTS })
+            }}
+            onSaveProfile={(name, nextWeights) =>
+              saveWeightProfile.mutate({ name, weights: nextWeights })
+            }
+            onDeleteProfile={(id) => removeWeightProfile.mutate(id)}
+          />
+          {saveWeightProfile.isError && <p className="error">{saveWeightProfile.error.message}</p>}
+          {removeWeightProfile.isError && (
+            <p className="error">{removeWeightProfile.error.message}</p>
+          )}
           {startError && <p className="error">{startError}</p>}
           {notice && <p className="success-message">{notice}</p>}
           <button
@@ -712,10 +774,10 @@ function Timetable({
         </div>
         <div className="week-tabs" role="group" aria-label="Неделя">
           <button className={week === 'odd' ? 'selected' : ''} onClick={() => onWeek('odd')}>
-            Числитель
+            Над чертой
           </button>
           <button className={week === 'even' ? 'selected' : ''} onClick={() => onWeek('even')}>
-            Знаменатель
+            Под чертой
           </button>
         </div>
         <div className="schedule-quality">

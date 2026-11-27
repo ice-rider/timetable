@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -26,6 +28,7 @@ type Querier interface {
 	CreateSubgroup(ctx context.Context, arg CreateSubgroupParams) (Subgroup, error)
 	CreateTeacher(ctx context.Context, arg CreateTeacherParams) (Teacher, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateWeightProfile(ctx context.Context, arg CreateWeightProfileParams) (WeightProfile, error)
 	DeleteAssignment(ctx context.Context, arg DeleteAssignmentParams) (int64, error)
 	DeleteBuilding(ctx context.Context, id int64) (int64, error)
 	DeleteCurriculumItem(ctx context.Context, id int64) (int64, error)
@@ -44,6 +47,7 @@ type Querier interface {
 	DeleteSubgroup(ctx context.Context, id int64) (int64, error)
 	DeleteSubgroupOf(ctx context.Context, arg DeleteSubgroupOfParams) (int64, error)
 	DeleteTeacher(ctx context.Context, id int64) (int64, error)
+	DeleteWeightProfile(ctx context.Context, id int64) (int64, error)
 	GetBuilding(ctx context.Context, id int64) (Building, error)
 	GetCurriculumItem(ctx context.Context, id int64) (CurriculumItem, error)
 	GetDiscipline(ctx context.Context, id int64) (Discipline, error)
@@ -53,12 +57,14 @@ type Querier interface {
 	// Queries used by the reference-data REST API (single-row access for CRUD).
 	GetRoomType(ctx context.Context, code string) (RoomType, error)
 	GetSchedule(ctx context.Context, id int64) (Schedule, error)
+	GetScheduleJob(ctx context.Context, id string) (ScheduleJob, error)
 	GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (Session, error)
 	GetSubgroupOf(ctx context.Context, arg GetSubgroupOfParams) (Subgroup, error)
 	GetTeacher(ctx context.Context, id int64) (Teacher, error)
 	GetTimeGrid(ctx context.Context) (TimeGrid, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByLogin(ctx context.Context, login string) (User, error)
+	GetWeightProfile(ctx context.Context, id int64) (WeightProfile, error)
 	InsertAudit(ctx context.Context, arg InsertAuditParams) (AuditLog, error)
 	ListAssignments(ctx context.Context, scheduleID int64) ([]Assignment, error)
 	ListAudit(ctx context.Context, arg ListAuditParams) ([]AuditLog, error)
@@ -77,12 +83,14 @@ type Querier interface {
 	ListRoomTypes(ctx context.Context) ([]RoomType, error)
 	ListRooms(ctx context.Context) ([]Room, error)
 	ListRoomsFiltered(ctx context.Context, arg ListRoomsFilteredParams) ([]Room, error)
+	ListScheduleJobs(ctx context.Context) ([]ScheduleJob, error)
 	ListSchedules(ctx context.Context) ([]Schedule, error)
 	ListSubgroups(ctx context.Context) ([]Subgroup, error)
 	ListSubgroupsOf(ctx context.Context, groupID int64) ([]Subgroup, error)
 	ListTeacherAvailability(ctx context.Context) ([]TeacherAvailability, error)
 	ListTeacherAvailabilityOf(ctx context.Context, teacherID int64) ([]TeacherAvailability, error)
 	ListTeachers(ctx context.Context) ([]Teacher, error)
+	ListWeightProfiles(ctx context.Context) ([]WeightProfile, error)
 	LockSchedule(ctx context.Context, id int64) (int64, error)
 	ResetSeedDisciplineIDs(ctx context.Context) error
 	ResetSeedGroupIDs(ctx context.Context) error
@@ -97,12 +105,16 @@ type Querier interface {
 	UpdateGroup(ctx context.Context, arg UpdateGroupParams) (Group, error)
 	UpdateRoom(ctx context.Context, arg UpdateRoomParams) (Room, error)
 	UpdateRoomType(ctx context.Context, arg UpdateRoomTypeParams) (RoomType, error)
+	UpdateScheduleWeights(ctx context.Context, arg UpdateScheduleWeightsParams) error
 	UpdateSubgroupOf(ctx context.Context, arg UpdateSubgroupOfParams) (Subgroup, error)
 	UpdateTeacher(ctx context.Context, arg UpdateTeacherParams) (Teacher, error)
+	UpdateWeightProfile(ctx context.Context, arg UpdateWeightProfileParams) (WeightProfile, error)
 	UpsertAssignment(ctx context.Context, arg UpsertAssignmentParams) error
 	UpsertPeriod(ctx context.Context, arg UpsertPeriodParams) (Period, error)
 	UpsertRoomType(ctx context.Context, arg UpsertRoomTypeParams) (RoomType, error)
+	UpsertScheduleJob(ctx context.Context, arg UpsertScheduleJobParams) (ScheduleJob, error)
 	UpsertTimeGrid(ctx context.Context, arg UpsertTimeGridParams) (TimeGrid, error)
+	WeightProfileInUse(ctx context.Context, weightProfileID pgtype.Int8) (pgtype.Bool, error)
 }
 
 var _ Querier = (*Queries)(nil)

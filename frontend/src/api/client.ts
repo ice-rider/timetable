@@ -71,3 +71,11 @@ export function getJSON<T>(path: string, signal?: AbortSignal): Promise<T> {
 export function postJSON<T>(path: string, body?: unknown): Promise<T> {
   return request(path, { method: 'POST', body: JSON.stringify(body ?? {}) })
 }
+
+export function putJSON<T>(path: string, body: unknown): Promise<T> {
+  return request(path, { method: 'PUT', body: JSON.stringify(body) })
+}
+
+export async function deleteJSON(path: string): Promise<void> {
+  await request<void>(path, { method: 'DELETE' })
+}

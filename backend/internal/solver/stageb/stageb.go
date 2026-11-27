@@ -44,6 +44,8 @@ type Options struct {
 	T0, TEnd float64
 	// Resume continues from a saved state (same problem and options).
 	Resume *State
+	// StopWhenZero stops as soon as no hard conflicts and no weighted soft penalty remain.
+	StopWhenZero bool
 	// OnProgress receives the current best schedule periodically while Run is active.
 	OnProgress func(Snapshot)
 }
@@ -254,6 +256,8 @@ func (o *Optimizer) Run(ctx context.Context) Stats {
 		o.opt.OnProgress(snapshot)
 	}
 	if len(o.moves) == 0 {
+		o.saveBest(0, 0)
+		o.state = State{RNG: mustRNG(o.pcg), Current: o.s.Assignments(), Best: o.Best()}
 		st.Final, st.HardAfter = st.Initial, st.HardBefore
 		reportProgress(0)
 		return st
@@ -309,6 +313,9 @@ func (o *Optimizer) Run(ctx context.Context) Stats {
 				st.Improved++
 				o.saveBest(step, elapsed0+time.Since(start))
 			}
+			if o.opt.StopWhenZero && o.conflicts == 0 && o.curSoft.Total(o.w) == 0 {
+				break
+			}
 		} else {
 			o.undo(undo)
 		}
@@ -335,6 +342,11 @@ func (o *Optimizer) Run(ctx context.Context) Stats {
 func (o *Optimizer) hardCount() int {
 	n, _ := hard.Split(hard.Check(o.s, o.opt.Policy))
 	return len(n)
+}
+
+func mustRNG(pcg *rand.PCG) []byte {
+	rng, _ := pcg.MarshalBinary()
+	return rng
 }
 
 func (o *Optimizer) undo(m move.Move) {

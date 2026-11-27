@@ -114,8 +114,25 @@ type model struct {
 	capacityOK bool
 }
 
+// AnalyzeConfig configures one review run.
+type AnalyzeConfig struct {
+	Weights *soft.Weights
+}
+
+// AnalyzeOption customizes a review run.
+type AnalyzeOption func(*AnalyzeConfig)
+
+// WithWeights sets custom soft-criterion weights for a review run.
+func WithWeights(w *soft.Weights) AnalyzeOption {
+	return func(c *AnalyzeConfig) { c.Weights = w }
+}
+
 // Analyze evaluates the batch.
-func Analyze(b *ttx.Batch) (*Report, error) {
+func Analyze(b *ttx.Batch, opts ...AnalyzeOption) (*Report, error) {
+	cfg := &AnalyzeConfig{}
+	for _, o := range opts {
+		o(cfg)
+	}
 	m, p, s, pol, err := load(b)
 	if err != nil {
 		return nil, err
@@ -132,7 +149,7 @@ func Analyze(b *ttx.Batch) (*Report, error) {
 		},
 	}
 	r.Violations = m.violations(p, vs)
-	r.softCriteria(m, p, s)
+	r.softCriteria(m, p, s, cfg.Weights)
 	r.scores(m, p, s, vs)
 	r.Notes = m.notes()
 	if r.Issues == nil {
@@ -347,7 +364,7 @@ func (m *model) violations(p *engine.Problem, vs []hard.Violation) []Violation {
 	return out
 }
 
-func (r *Report) softCriteria(m *model, p *engine.Problem, s *engine.Schedule) {
+func (r *Report) softCriteria(m *model, p *engine.Problem, s *engine.Schedule, custom *soft.Weights) {
 	ev := soft.New(p)
 	total := ev.Full(s)
 	for t := range p.Teachers {
@@ -356,6 +373,9 @@ func (r *Report) softCriteria(m *model, p *engine.Problem, s *engine.Schedule) {
 		}
 	}
 	w := soft.DefaultWeights()
+	if custom != nil {
+		w = *custom
+	}
 	unavailable := map[soft.Criterion]bool{soft.Preferences: true, soft.CapacityWaste: !m.capacityOK, soft.RoomCount: true}
 	for c := soft.Criterion(0); c < soft.NumCriteria; c++ {
 		cr := Criterion{Key: c.Key(), Title: criterionTitles[c], Value: total[c], Weight: w[c], Available: !unavailable[c]}

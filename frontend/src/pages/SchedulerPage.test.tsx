@@ -127,7 +127,7 @@ describe('SchedulerPage', () => {
     expect(screen.getByText('История')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Скачать Excel' }))
     await waitFor(() => expect(downloadScheduleExcel).toHaveBeenCalledOnce())
-    fireEvent.click(screen.getByRole('button', { name: 'Знаменатель' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Под чертой' }))
 
     await waitFor(() => expect(screen.queryByText('История')).not.toBeInTheDocument())
     expect(screen.getByText('Алгебра')).toBeInTheDocument()

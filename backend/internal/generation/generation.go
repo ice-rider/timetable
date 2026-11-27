@@ -3,8 +3,11 @@ package generation
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
+	"math"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -27,6 +30,14 @@ type Options struct {
 	Name   string
 	Budget time.Duration
 	Seed   uint64
+	// Weights overrides soft-criterion weights; nil uses soft.DefaultWeights() or WeightProfileID.
+	Weights *soft.Weights
+	// WeightProfileID references a stored weight profile; nil uses defaults.
+	WeightProfileID *int64
+	// Resume continues stage B from a saved checkpoint.
+	Resume *stageb.State
+	// StopWhenZero stops when hard violations and weighted soft penalty are both zero.
+	StopWhenZero bool
 }
 
 // Progress is a point-in-time view of the anytime search.
@@ -74,6 +85,16 @@ type Violation struct {
 	Strictness string  `json:"strictness"`
 }
 
+// SoftCriterion is one soft criterion with its effective weight and weighted contribution.
+type SoftCriterion struct {
+	Key       string  `json:"key"`
+	Title     string  `json:"title"`
+	Value     float64 `json:"value"`
+	Weight    float64 `json:"weight"`
+	Weighted  float64 `json:"weighted"`
+	Available bool    `json:"available"`
+}
+
 // Result describes the saved best schedule.
 type Result struct {
 	ScheduleID     int64       `json:"schedule_id"`
@@ -86,6 +107,13 @@ type Result struct {
 	Duration       string      `json:"duration"`
 	Cancelled      bool        `json:"cancelled"`
 	Violations     []Violation `json:"violations"`
+	// Soft lists every soft criterion with its value, effective weight and weighted contribution.
+	Soft []SoftCriterion `json:"soft,omitempty"`
+	// WeightsSnapshot is the effective soft-criterion weights used for this run.
+	WeightsSnapshot map[string]float64 `json:"weights_snapshot,omitempty"`
+	WeightProfileID *int64             `json:"weight_profile_id,omitempty"`
+	// StageBState is a checkpoint for continuing stage B.
+	StageBState *stageb.State `json:"stageb_state,omitempty"`
 }
 
 // Solved is the in-memory output of Solve before it is saved.
@@ -115,15 +143,36 @@ func (s *Service) Generate(
 	if err != nil {
 		return Result{}, fmt.Errorf("load timetable data: %w", err)
 	}
+	weights := soft.DefaultWeights()
+	if opt.Weights != nil {
+		weights = *opt.Weights
+	}
+	var weightProfileID *int64
+	if opt.WeightProfileID != nil && *opt.WeightProfileID > 0 {
+		weightProfileID = opt.WeightProfileID
+		if opt.Weights == nil {
+			prof, err := s.st.Queries.GetWeightProfile(ctx, *opt.WeightProfileID)
+			if err != nil {
+				// A missing profile falls back to defaults; the schedule stores no dangling reference.
+				slog.Warn("weight profile not found for generation, using defaults", "id", *opt.WeightProfileID, "error", err)
+				weightProfileID = nil
+			} else {
+				weights = weightsFromProfile(prof)
+			}
+		}
+	}
+	opt.Weights = &weights
 	solved, err := Solve(ctx, p, opt, report)
 	if err != nil {
 		return Result{}, err
 	}
-	scheduleID, err := s.save(ctx, actor, p, solved.Schedule, solved.Result)
+	scheduleID, err := s.save(ctx, actor, p, solved.Schedule, solved.Result, weights, weightProfileID)
 	if err != nil {
 		return Result{}, err
 	}
 	solved.Result.ScheduleID = scheduleID
+	solved.Result.WeightsSnapshot = weightsSnapshot(weights)
+	solved.Result.WeightProfileID = weightProfileID
 	if report != nil {
 		report(Progress{
 			Stage: "completed", Percent: 100, Lessons: solved.Result.Lessons,
@@ -149,25 +198,28 @@ func Solve(ctx context.Context, p *engine.Problem, opt Options, report func(Prog
 
 	started := time.Now()
 	sch := engine.NewSchedule(p)
+	weights := soft.DefaultWeights()
+	if opt.Weights != nil {
+		weights = *opt.Weights
+	}
 	if report != nil {
 		report(Progress{Stage: "feasibility", Percent: 5, Lessons: len(p.Lessons)})
 	}
-	stageA := solver.BuildFeasible(solver.NewGraph(p), sch, solver.StageAOptions{
-		Seed: opt.Seed, RepairTime: min(opt.Budget/3, 10*time.Second),
-	})
-	if report != nil {
-		initialPenalty := soft.New(p).Full(sch).Total(soft.DefaultWeights())
-		report(progressFor(
-			sch, stageA.Violations, p, "optimization", 25, 0, initialPenalty, time.Since(started),
-		))
+	var stageViolations []hard.Violation
+	if opt.Resume == nil {
+		stageA := solver.BuildFeasible(solver.NewGraph(p), sch, solver.StageAOptions{
+			Seed: opt.Seed, RepairTime: min(opt.Budget/3, 10*time.Second),
+		})
+		stageViolations = stageA.Violations
 	}
 
 	var steps int64
+	var stageBState *stageb.State
 	optimizationBudget := opt.Budget - time.Since(started)
 	if ctx.Err() == nil && optimizationBudget > 0 && len(p.Lessons) > 0 {
-		weights := soft.DefaultWeights()
 		optimizer := stageb.New(solver.NewGraph(p), sch, stageb.Options{
 			Weights: &weights, Budget: optimizationBudget, Seed: opt.Seed,
+			Resume: opt.Resume, StopWhenZero: opt.StopWhenZero,
 			OnProgress: func(snapshot stageb.Snapshot) {
 				if report != nil {
 					report(progressForAssignments(
@@ -181,29 +233,103 @@ func Solve(ctx context.Context, p *engine.Problem, opt Options, report func(Prog
 		})
 		stats := optimizer.Run(ctx)
 		steps = stats.Steps
+		stageBState = &stageb.State{}
+		*stageBState = optimizer.State()
 	}
-
+	if report != nil {
+		initialPenalty := soft.New(p).Full(sch).Total(weights)
+		report(progressFor(
+			sch, stageViolations, p, "optimization", 25, 0, initialPenalty, time.Since(started),
+		))
+	}
 	violations := hard.Check(sch, nil)
 	hardViolations, _ := hard.Split(violations)
 	breakdown := soft.New(p).Full(sch)
 	result := Result{
 		Name: opt.Name, Lessons: len(p.Lessons), Placed: placedCount(sch.Assignments()),
-		HardViolations: len(hardViolations), SoftPenalty: breakdown.Total(soft.DefaultWeights()),
+		HardViolations: len(hardViolations), SoftPenalty: breakdown.Total(weights),
 		Steps: steps, Duration: time.Since(started).Round(time.Millisecond).String(),
 		Cancelled: ctx.Err() != nil, Violations: convertViolations(p, violations),
+		Soft:            SoftCriterias(p, sch, weights),
+		WeightsSnapshot: weightsSnapshot(weights),
+		StageBState:     stageBState,
 	}
 	return &Solved{Problem: p, Schedule: sch, Result: result}, nil
 }
 
-func (s *Service) save(ctx context.Context, actor store.Actor, p *engine.Problem, sch *engine.Schedule, result Result) (int64, error) {
+// SoftCriterias lists every soft criterion with its raw value, the effective weight and the
+// weighted contribution; available marks criteria that are enabled (weight > 0) for this run.
+func SoftCriterias(p *engine.Problem, sch *engine.Schedule, w soft.Weights) []SoftCriterion {
+	breakdown := soft.New(p).Full(sch)
+	out := make([]SoftCriterion, 0, soft.NumCriteria)
+	for c := soft.Criterion(0); c < soft.NumCriteria; c++ {
+		value := float64(breakdown[c])
+		weight := float64(w[c])
+		out = append(out, SoftCriterion{
+			Key: c.Key(), Title: criterionTitle(c), Value: value, Weight: weight,
+			Weighted: value * weight, Available: weight > 0,
+		})
+	}
+	return out
+}
+
+func criterionTitle(c soft.Criterion) string {
+	switch c {
+	case soft.Gaps:
+		return "Окна"
+	case soft.BuildingTransitions:
+		return "Переходы между корпусами"
+	case soft.TeacherCompactness:
+		return "Учебные дни преподавателей"
+	case soft.MinWorkingDays:
+		return "Повторы дисциплины в один день"
+	case soft.CurriculumCompactness:
+		return "Одиночные пары в дне"
+	case soft.RoomStability:
+		return "Смена аудиторий у дисциплины"
+	case soft.CapacityWaste:
+		return "Пустые места (десятки)"
+	case soft.EdgeSlots:
+		return "Первая и последняя пара"
+	case soft.RoomCount:
+		return "Задействовано аудиторий"
+	case soft.Preferences:
+		return "Нежелательные слоты"
+	}
+	return c.Key()
+}
+
+func (s *Service) save(
+	ctx context.Context,
+	actor store.Actor,
+	p *engine.Problem,
+	sch *engine.Schedule,
+	result Result,
+	weights soft.Weights,
+	weightProfileID *int64,
+) (int64, error) {
 	persistCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
 	defer cancel()
 	var scheduleID int64
-	_, err := s.st.WithAudit(persistCtx, actor, store.Change{
+	snapshot := weightsSnapshot(weights)
+	rawSnapshot, err := json.Marshal(snapshot)
+	if err != nil {
+		return 0, fmt.Errorf("marshal weights snapshot: %w", err)
+	}
+	var profileID pgtype.Int8
+	if weightProfileID != nil {
+		profileID = pgtype.Int8{Int64: *weightProfileID, Valid: true}
+	}
+	_, err = s.st.WithAudit(persistCtx, actor, store.Change{
 		Entity: "schedule", Reason: "solver generation",
 	}, func(q *db.Queries, _ pgx.Tx, change *store.Change) error {
 		schedule, err := q.CreateSchedule(persistCtx, result.Name)
 		if err != nil {
+			return err
+		}
+		if err := q.UpdateScheduleWeights(persistCtx, db.UpdateScheduleWeightsParams{
+			ID: schedule.ID, WeightProfileID: profileID, WeightsSnapshot: rawSnapshot,
+		}); err != nil {
 			return err
 		}
 		for i, assignment := range sch.Assignments() {
@@ -225,6 +351,8 @@ func (s *Service) save(ctx context.Context, actor store.Actor, p *engine.Problem
 		}
 		scheduleID = schedule.ID
 		result.ScheduleID = schedule.ID
+		result.WeightsSnapshot = snapshot
+		result.WeightProfileID = weightProfileID
 		change.EntityID = fmt.Sprint(schedule.ID)
 		change.After = result
 		return nil
@@ -233,6 +361,28 @@ func (s *Service) save(ctx context.Context, actor store.Actor, p *engine.Problem
 		return 0, fmt.Errorf("save generated schedule: %w", err)
 	}
 	return scheduleID, nil
+}
+
+func weightsFromProfile(prof db.WeightProfile) soft.Weights {
+	w := soft.DefaultWeights()
+	var m map[string]float64
+	if len(prof.Weights) == 0 || json.Unmarshal(prof.Weights, &m) != nil {
+		return w
+	}
+	for k, v := range m {
+		if c, ok := soft.ParseCriterion(k); ok && !math.IsNaN(v) && !math.IsInf(v, 0) && v >= 0 {
+			w[c] = v
+		}
+	}
+	return w
+}
+
+func weightsSnapshot(w soft.Weights) map[string]float64 {
+	out := make(map[string]float64, soft.NumCriteria)
+	for c := soft.Criterion(0); c < soft.NumCriteria; c++ {
+		out[c.Key()] = w[c]
+	}
+	return out
 }
 
 func progressFor(

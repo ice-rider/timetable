@@ -7,6 +7,9 @@ SELECT * FROM schedules WHERE id = $1;
 -- name: CreateSchedule :one
 INSERT INTO schedules (name) VALUES ($1) RETURNING *;
 
+-- name: UpdateScheduleWeights :exec
+UPDATE schedules SET weight_profile_id = $2, weights_snapshot = $3 WHERE id = $1;
+
 -- name: DeleteSchedule :execrows
 DELETE FROM schedules WHERE id = $1;
 

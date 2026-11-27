@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/istu-pro-dev/timetable/backend/internal/engine"
 	"github.com/istu-pro-dev/timetable/backend/internal/engine/hard"
 	"github.com/istu-pro-dev/timetable/backend/internal/engine/soft"
+	"github.com/istu-pro-dev/timetable/backend/internal/generation"
 	"github.com/istu-pro-dev/timetable/backend/internal/store"
 	"github.com/istu-pro-dev/timetable/backend/internal/store/db"
 )
@@ -43,6 +46,11 @@ type scheduleDetail struct {
 	Placed         int               `json:"placed"`
 	HardViolations int               `json:"hard_violations"`
 	SoftPenalty    float64           `json:"soft_penalty"`
+	// WeightsSnapshot is the effective soft-criterion weights used to generate this schedule.
+	WeightsSnapshot map[string]float64 `json:"weights_snapshot,omitempty"`
+	WeightProfileID *int64             `json:"weight_profile_id,omitempty"`
+	// Soft lists every soft criterion with its value, effective weight and weighted contribution.
+	Soft []generation.SoftCriterion `json:"soft,omitempty"`
 }
 
 func (s *server) listSchedules(w http.ResponseWriter, r *http.Request) {
@@ -114,12 +122,46 @@ func (s *server) getSchedule(w http.ResponseWriter, r *http.Request) {
 			lessons = append(lessons, item)
 		}
 		hardViolations, _ := hard.Split(hard.Check(sch, nil))
+		weights := weightsForSchedule(row)
+		var weightProfileID *int64
+		if row.WeightProfileID.Valid {
+			id := row.WeightProfileID.Int64
+			weightProfileID = &id
+		}
 		return scheduleDetail{
 			ID: row.ID, Name: row.Name, CreatedAt: row.CreatedAt.Time,
 			Days: int(grid.Days), PeriodsPerDay: int(grid.PeriodsPerDay),
 			Periods: mapSlice(periodRows, toPeriod), Lessons: lessons, Placed: placed,
-			HardViolations: len(hardViolations),
-			SoftPenalty:    soft.New(p).Full(sch).Total(soft.DefaultWeights()),
+			HardViolations:  len(hardViolations),
+			SoftPenalty:     soft.New(p).Full(sch).Total(weights),
+			WeightsSnapshot: weightsSnapshot(weights),
+			WeightProfileID: weightProfileID,
+			Soft:            generation.SoftCriterias(p, sch, weights),
 		}, nil
 	})
+}
+
+func weightsForSchedule(row db.Schedule) soft.Weights {
+	w := soft.DefaultWeights()
+	if len(row.WeightsSnapshot) == 0 {
+		return w
+	}
+	var m map[string]float64
+	if json.Unmarshal(row.WeightsSnapshot, &m) != nil {
+		return w
+	}
+	for k, v := range m {
+		if c, ok := soft.ParseCriterion(k); ok && !math.IsNaN(v) && !math.IsInf(v, 0) && v >= 0 {
+			w[c] = v
+		}
+	}
+	return w
+}
+
+func weightsSnapshot(w soft.Weights) map[string]float64 {
+	out := make(map[string]float64, soft.NumCriteria)
+	for c := soft.Criterion(0); c < soft.NumCriteria; c++ {
+		out[c.Key()] = w[c]
+	}
+	return out
 }

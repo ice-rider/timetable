@@ -1,10 +1,13 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
 
+	"github.com/istu-pro-dev/timetable/backend/internal/engine/soft"
 	"github.com/istu-pro-dev/timetable/backend/internal/httpx"
 	"github.com/istu-pro-dev/timetable/backend/internal/ingest"
 	"github.com/istu-pro-dev/timetable/backend/internal/review"
@@ -55,12 +58,36 @@ func (s *server) postReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var weights *soft.Weights
+	if pid := r.FormValue("weight_profile_id"); pid != "" && s.store != nil {
+		id, err := strconv.ParseInt(pid, 10, 64)
+		if err == nil && id > 0 {
+			prof, err := s.store.Queries.GetWeightProfile(r.Context(), id)
+			if err != nil {
+				s.logger.Warn("weight profile not found, using defaults", "id", id, "error", err)
+			} else if len(prof.Weights) > 0 {
+				var m map[string]float64
+				if json.Unmarshal(prof.Weights, &m) == nil {
+					w := toSoftWeights(m)
+					weights = &w
+				} else {
+					s.logger.Warn("failed to unmarshal weight profile, using defaults", "id", id)
+				}
+			}
+		}
+	}
+
 	batch, err := ingest.Load(hdr.Filename, data)
 	if err != nil {
 		httpx.WriteError(w, http.StatusUnprocessableEntity, "unsupported_file", firstLine(err))
 		return
 	}
-	rep, err := review.Analyze(batch)
+	var rep *review.Report
+	if weights != nil {
+		rep, err = review.Analyze(batch, review.WithWeights(weights))
+	} else {
+		rep, err = review.Analyze(batch)
+	}
 	if err != nil {
 		httpx.WriteError(w, http.StatusUnprocessableEntity, "validation_failed", firstLine(err))
 		return

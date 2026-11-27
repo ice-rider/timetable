@@ -34,6 +34,7 @@ tags:
   - name: time-grid
   - name: curriculum
   - name: review
+  - name: weight-profiles
   - name: schedule-jobs
   - name: schedules
 
@@ -75,6 +76,11 @@ paths:
               required: [file]
               properties:
                 file: { type: string, format: binary }
+                weight_profile_id:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  description: Optional stored weight profile used for soft criteria.
       responses:
         "200":
           description: The review report.
@@ -97,6 +103,81 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+
+  /api/weight-profiles:
+    get:
+      tags: [weight-profiles]
+      operationId: listWeightProfiles
+      summary: List weight profiles
+      responses:
+        "200":
+          description: List of profiles.
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/WeightProfile" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+    post:
+      tags: [weight-profiles]
+      operationId: createWeightProfile
+      summary: Create a weight profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WeightProfileInput" }
+      responses:
+        "201": { $ref: "#/components/responses/WeightProfile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+
+  /api/weight-profiles/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: integer, format: int64, minimum: 1 }
+    get:
+      tags: [weight-profiles]
+      operationId: getWeightProfile
+      summary: Get a weight profile
+      responses:
+        "200": { $ref: "#/components/responses/WeightProfile" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+    put:
+      tags: [weight-profiles]
+      operationId: updateWeightProfile
+      summary: Update a weight profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WeightProfileInput" }
+      responses:
+        "200": { $ref: "#/components/responses/WeightProfile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
+    delete:
+      tags: [weight-profiles]
+      operationId: deleteWeightProfile
+      summary: Delete a weight profile
+      description: Fails with 409 `in_use` if referenced by any schedule job or schedule.
+      responses:
+        "204": { description: Deleted. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
 
   /api/openapi.yaml:
     get:
@@ -969,6 +1050,22 @@ paths:
               schema: { $ref: "#/components/schemas/Error" }
         "503": { $ref: "#/components/responses/NoDatabase" }
   /api/schedule-jobs:
+    get:
+      tags: [schedule-jobs]
+      operationId: listScheduleJobs
+      summary: List persisted schedule generation jobs
+      description: >-
+        Returns the persisted schedule_jobs history, newest first; a running job may appear queued
+        or running until it finishes.
+      responses:
+        "200":
+          description: The generation job history.
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/ScheduleJob" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
     post:
       tags: [schedule-jobs]
       operationId: startScheduleGeneration
@@ -987,6 +1084,17 @@ paths:
                 name: { type: string, maxLength: 120 }
                 budget_seconds: { type: integer, minimum: 1, maximum: 300, default: 30 }
                 seed: { type: integer, minimum: 0 }
+                weight_profile_id:
+                  type: [integer, "null"]
+                  format: int64
+                  minimum: 1
+                  description: Optional. If provided, uses this weight profile; otherwise defaults. Effective weights are snapshotted at start.
+                weights:
+                  type: object
+                  additionalProperties: { type: number, minimum: 0 }
+                  description: >-
+                    Optional raw effective soft-criterion weights (integer >= 0); when omitted the
+                    weight profile (or defaults) is used. Effective weights are snapshotted at start.
       responses:
         "202":
           description: The job has been queued.
@@ -1048,6 +1156,67 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/schedule-jobs/{id}/continue:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, pattern: "^[0-9a-f]{32}$" }
+    post:
+      tags: [schedule-jobs]
+      operationId: continueScheduleGenerationJob
+      summary: Continue a schedule generation job from its checkpoint
+      description: >-
+        Starts a new generation job that resumes the stage B checkpoint of the source job. The new
+        job records the source job in continuation_of and the source schedule in
+        continue_from_schedule_id; its own weights come from the source weights_snapshot.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name: { type: string, maxLength: 120 }
+                budget_seconds: { type: integer, minimum: 1, maximum: 300, default: 30 }
+                seed: { type: integer, minimum: 0 }
+                weights:
+                  type: object
+                  additionalProperties: { type: number, minimum: 0 }
+                stop_when_zero: { type: boolean }
+                total_budget_seconds: { type: integer, minimum: 0 }
+      responses:
+        "202":
+          description: The continuation job has been queued.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ScheduleJob" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: A generation job is running (`generation_running`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "422":
+          description: Dataset references or values are invalid (`validation_failed`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: The in-memory generation queue is full (`jobs_busy`).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: The server could not allocate a job ID.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/NoDatabase" }
   /api/schedules:
     get:
       tags: [schedules]
@@ -1252,6 +1421,40 @@ components:
                     division: { type: string }
                     part: { type: integer, minimum: 0 }
 
+    WeightProfile:
+      type: object
+      required: [id, name, weights, created_at, updated_at]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, minLength: 1, maxLength: 120 }
+        weights:
+          type: object
+          additionalProperties: { type: number, minimum: 0 }
+          description: "Keys are criterion keys (e.g., 'gaps'), values are weights (e.g., 0, 2, 5, 10)."
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    WeightProfileInput:
+      type: object
+      additionalProperties: false
+      required: [name, weights]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        weights:
+          type: object
+          additionalProperties: { type: number, minimum: 0 }
+
+    SoftCriterion:
+      type: object
+      required: [key, title, value, weight, weighted, available]
+      properties:
+        key: { type: string, examples: [gaps] }
+        title: { type: string }
+        value: { type: number }
+        weight: { type: number }
+        weighted: { type: number }
+        available: { type: boolean }
+
     Error:
       type: object
       required: [error]
@@ -1305,6 +1508,11 @@ components:
             hard_violations: { type: integer }
             soft_penalty: { type: number }
         schedule_id: { type: integer, format: int64 }
+        weight_profile_id: { type: integer, format: int64 }
+        weights_snapshot:
+          type: object
+          additionalProperties: { type: number }
+          description: Effective soft-criterion weights used for this run.
         result:
           type: object
           properties:
@@ -1317,6 +1525,10 @@ components:
             steps: { type: integer }
             duration: { type: string }
             cancelled: { type: boolean }
+            weight_profile_id: { type: integer, format: int64 }
+            weights_snapshot:
+              type: object
+              additionalProperties: { type: number }
             violations:
               type: array
               items:
@@ -1327,6 +1539,14 @@ components:
                   message: { type: string }
                   lesson_ids: { type: array, items: { type: integer, format: int64 } }
                   strictness: { type: string, enum: [hard, heavy_soft] }
+        continuation_of: { type: string, description: Id of the schedule job this run continues. }
+        continue_from_schedule_id: { type: [integer, "null"], format: int64, minimum: 1 }
+        attempt: { type: integer, minimum: 1 }
+        total_budget_seconds: { type: [integer, "null"], format: integer, minimum: 0 }
+        stop_when_zero: { type: boolean }
+        soft:
+          type: array
+          items: { $ref: "#/components/schemas/SoftCriterion" }
         error: { type: string }
     ScheduleSummary:
       type: object
@@ -1342,6 +1562,15 @@ components:
         id: { type: integer, format: int64 }
         name: { type: string }
         created_at: { type: string, format: date-time }
+        weight_profile_id: { type: integer, format: int64 }
+        weights_snapshot:
+          type: object
+          additionalProperties: { type: number }
+          description: Weights used when this schedule was generated.
+        soft:
+          type: array
+          items: { $ref: "#/components/schemas/SoftCriterion" }
+          description: Soft-criterion values with effective weights for this schedule.
         days: { type: integer }
         periods_per_day: { type: integer }
         periods:
@@ -1761,6 +1990,11 @@ components:
           schema: { $ref: "#/components/schemas/CurriculumItemInput" }
 
   responses:
+    WeightProfile:
+      description: The weight profile.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/WeightProfile" }
     Building:
       description: The building.
       content:

@@ -12,13 +12,19 @@ import (
 )
 
 const createSchedule = `-- name: CreateSchedule :one
-INSERT INTO schedules (name) VALUES ($1) RETURNING id, name, created_at
+INSERT INTO schedules (name) VALUES ($1) RETURNING id, name, created_at, weight_profile_id, weights_snapshot
 `
 
 func (q *Queries) CreateSchedule(ctx context.Context, name string) (Schedule, error) {
 	row := q.db.QueryRow(ctx, createSchedule, name)
 	var i Schedule
-	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.WeightProfileID,
+		&i.WeightsSnapshot,
+	)
 	return i, err
 }
 
@@ -52,13 +58,19 @@ func (q *Queries) DeleteSchedule(ctx context.Context, id int64) (int64, error) {
 }
 
 const getSchedule = `-- name: GetSchedule :one
-SELECT id, name, created_at FROM schedules WHERE id = $1
+SELECT id, name, created_at, weight_profile_id, weights_snapshot FROM schedules WHERE id = $1
 `
 
 func (q *Queries) GetSchedule(ctx context.Context, id int64) (Schedule, error) {
 	row := q.db.QueryRow(ctx, getSchedule, id)
 	var i Schedule
-	err := row.Scan(&i.ID, &i.Name, &i.CreatedAt)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.WeightProfileID,
+		&i.WeightsSnapshot,
+	)
 	return i, err
 }
 
@@ -97,7 +109,7 @@ func (q *Queries) ListAssignments(ctx context.Context, scheduleID int64) ([]Assi
 }
 
 const listSchedules = `-- name: ListSchedules :many
-SELECT id, name, created_at FROM schedules ORDER BY created_at DESC, id DESC
+SELECT id, name, created_at, weight_profile_id, weights_snapshot FROM schedules ORDER BY created_at DESC, id DESC
 `
 
 func (q *Queries) ListSchedules(ctx context.Context) ([]Schedule, error) {
@@ -109,7 +121,13 @@ func (q *Queries) ListSchedules(ctx context.Context) ([]Schedule, error) {
 	items := []Schedule{}
 	for rows.Next() {
 		var i Schedule
-		if err := rows.Scan(&i.ID, &i.Name, &i.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.WeightProfileID,
+			&i.WeightsSnapshot,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -129,6 +147,21 @@ func (q *Queries) LockSchedule(ctx context.Context, id int64) (int64, error) {
 	var id_2 int64
 	err := row.Scan(&id_2)
 	return id_2, err
+}
+
+const updateScheduleWeights = `-- name: UpdateScheduleWeights :exec
+UPDATE schedules SET weight_profile_id = $2, weights_snapshot = $3 WHERE id = $1
+`
+
+type UpdateScheduleWeightsParams struct {
+	ID              int64
+	WeightProfileID pgtype.Int8
+	WeightsSnapshot []byte
+}
+
+func (q *Queries) UpdateScheduleWeights(ctx context.Context, arg UpdateScheduleWeightsParams) error {
+	_, err := q.db.Exec(ctx, updateScheduleWeights, arg.ID, arg.WeightProfileID, arg.WeightsSnapshot)
+	return err
 }
 
 const upsertAssignment = `-- name: UpsertAssignment :exec

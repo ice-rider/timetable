@@ -59,6 +59,7 @@ func newServer(d Deps) *server {
 		s.handle(pattern, authRoutes[pattern])
 	}
 	s.registerReference()
+	s.registerWeightProfiles()
 	s.registerReview()
 	s.registerGeneration()
 	s.registerDemoData()

@@ -32,6 +32,11 @@ func unprocessable(msg string) *apiError {
 	return &apiError{http.StatusUnprocessableEntity, "validation_failed", msg}
 }
 
+// inUseError indicates that a record cannot be deleted because it is referenced elsewhere.
+type inUseError string
+
+func (e inUseError) Error() string { return string(e) }
+
 // orNotFound turns pgx.ErrNoRows into a 404 naming what was not found.
 func orNotFound(err error, what string) error {
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -60,9 +65,12 @@ func (s *server) writeError(w http.ResponseWriter, err error, o op) {
 	err = store.MapError(err)
 	var ae *apiError
 	var pgErr *pgconn.PgError
+	var inUse inUseError
 	switch {
 	case errors.As(err, &ae):
 		httpx.WriteError(w, ae.status, ae.code, ae.message)
+	case errors.As(err, &inUse):
+		httpx.WriteError(w, http.StatusConflict, "in_use", string(inUse))
 	case errors.Is(err, pgx.ErrNoRows):
 		httpx.WriteError(w, http.StatusNotFound, "not_found", "record not found")
 	case errors.Is(err, store.ErrTeacherBusy), errors.Is(err, store.ErrGroupBusy),

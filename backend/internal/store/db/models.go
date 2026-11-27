@@ -431,9 +431,44 @@ type RoomType struct {
 }
 
 type Schedule struct {
-	ID        int64
-	Name      string
-	CreatedAt pgtype.Timestamptz
+	ID              int64
+	Name            string
+	CreatedAt       pgtype.Timestamptz
+	WeightProfileID pgtype.Int8
+	WeightsSnapshot []byte
+}
+
+type ScheduleJob struct {
+	ID                     string
+	Name                   string
+	Status                 string
+	Stage                  string
+	Progress               int32
+	Lessons                int32
+	Placed                 int32
+	HardViolations         int32
+	SoftPenalty            float64
+	Steps                  int64
+	Elapsed                string
+	BudgetSeconds          int32
+	Seed                   int64
+	Error                  pgtype.Text
+	ScheduleID             pgtype.Int8
+	WeightProfileID        pgtype.Int8
+	WeightsSnapshot        []byte
+	Preview                []byte
+	Result                 []byte
+	ContinuationOf         pgtype.Text
+	ContinueFromScheduleID pgtype.Int8
+	Attempt                int32
+	TotalBudgetSeconds     pgtype.Int4
+	StopWhenZero           bool
+	StagebState            []byte
+	CheckpointAt           pgtype.Timestamptz
+	CreatedAt              pgtype.Timestamptz
+	StartedAt              pgtype.Timestamptz
+	FinishedAt             pgtype.Timestamptz
+	UpdatedAt              pgtype.Timestamptz
 }
 
 type Session struct {
@@ -482,4 +517,12 @@ type User struct {
 	GroupID      pgtype.Int8
 	CreatedAt    pgtype.Timestamptz
 	Disabled     bool
+}
+
+type WeightProfile struct {
+	ID        int64
+	Name      string
+	Weights   []byte
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
 }

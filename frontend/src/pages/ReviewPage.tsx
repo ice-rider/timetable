@@ -138,10 +138,10 @@ function ReportView({ report }: { report: Report }) {
         </select>
         <div className="toggle">
           <button className={week === 'odd' ? 'on' : ''} onClick={() => setWeek('odd')}>
-            Числитель (над чертой)
+            Над чертой
           </button>
           <button className={week === 'even' ? 'on' : ''} onClick={() => setWeek('even')}>
-            Знаменатель (под чертой)
+            Под чертой
           </button>
         </div>
       </div>

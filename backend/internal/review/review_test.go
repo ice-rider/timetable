@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/istu-pro-dev/timetable/backend/internal/engine/soft"
 	"github.com/istu-pro-dev/timetable/backend/internal/ingest"
 	"github.com/istu-pro-dev/timetable/backend/internal/ingest/ttx"
 )
@@ -136,4 +137,42 @@ func TestImproveRemovesConflictsWithFewMoves(t *testing.T) {
 			t.Errorf("move = %+v", m)
 		}
 	}
+}
+
+func TestAnalyzeCustomWeights(t *testing.T) {
+	w := soft.DefaultWeights()
+	w[soft.Gaps] = 0
+	w[soft.BuildingTransitions] = 20
+	r := analyzeTTXWithWeights(t, `{"kind":"room","key":"1-1","building":"1","type":"general","title":"1-1"}
+{"kind":"room","key":"2-1","building":"2","type":"general","title":"2-1"}
+{"kind":"lesson","id":1,"audience":[{"group":"G"}],"day":"mon","period":1,"parity":"every","lesson_type":"lecture","discipline":"A","teachers":["T"],"room":"1-1"}
+{"kind":"lesson","id":2,"audience":[{"group":"G"}],"day":"mon","period":3,"parity":"every","lesson_type":"lecture","discipline":"B","teachers":["T"],"room":"2-1"}`, &w)
+	var gaps, trans float64
+	for _, c := range r.Soft {
+		if c.Key == "gaps" {
+			gaps = c.Weighted
+		}
+		if c.Key == "corpus_transitions" {
+			trans = c.Weighted
+		}
+	}
+	if gaps != 0 {
+		t.Fatalf("gaps weighted = %v, want 0", gaps)
+	}
+	if trans == 0 {
+		t.Fatalf("transitions weighted = 0, want > 0")
+	}
+}
+
+func analyzeTTXWithWeights(t *testing.T, text string, w *soft.Weights) *Report {
+	t.Helper()
+	b, err := ttx.Read(strings.NewReader(text))
+	if err != nil {
+		t.Fatal(err)
+	}
+	r, err := Analyze(b, WithWeights(w))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return r
 }
